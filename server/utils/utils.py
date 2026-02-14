@@ -11,4 +11,5 @@ def verify(plain_password, hashed_password):
 
 
 if __name__ == "__main__":
-    print(hash(settings.database_password))
+    hashed_pwd = hash(settings.database_password)
+    print(verify(settings.database_password, hashed_pwd))
