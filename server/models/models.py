@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, DateTime, Text, func, Enum as sqlEnum
+from sqlalchemy import String, ForeignKey, DateTime, Text, func, Enum as sqlEnum, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import List
 from datetime import datetime
@@ -34,7 +34,9 @@ class User(Base):
 
 class Job(Base):
     __tablename__ = "jobs"
-
+    __table_args__ = (
+        UniqueConstraint("user_id", "employer", "title")
+    )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"),
                                          nullable=False,
@@ -82,6 +84,8 @@ class Assessment(Base):
                                     autoincrement=True)
     type: Mapped[AssessmentType] = mapped_column(sqlEnum(AssessmentType, name="assessment_type"),
                                                  nullable=False)
+    description: Mapped[str] = mapped_column(Text,
+                                             nullable=True)
     completed: Mapped[bool] = mapped_column(nullable=False,
                                             default=False)
     deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
