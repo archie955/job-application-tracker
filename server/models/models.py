@@ -1,8 +1,9 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, text, Text, func
+from sqlalchemy import String, ForeignKey, DateTime, Text, func, Enum as sqlEnum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import List
 from datetime import datetime
 from ..database.database import Base
+from .datatypes import AssessmentType, ApplicationStatus
 
 class User(Base):
     __tablename__ = "users"
@@ -12,23 +13,84 @@ class User(Base):
                                     nullable=False)
     email: Mapped[str] = mapped_column(String(100),
                                        unique=True,
-                                       nullable=False)
-    password: Mapped[str] = mapped_column(String(200),
+                                       nullable=False,
+                                       index=True)
+    hashed_password: Mapped[str] = mapped_column(String(200),
                                           nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                  nullable=False,
                                                  server_default=func.now())
+    jobs: Mapped[List["Job"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    assessments: Mapped[List["Assessment"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
     
 
-class Jobs(Base):
+    
+
+class Job(Base):
     __tablename__ = "jobs"
 
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"),
+                                         nullable=False,
+                                         index=True)
     id: Mapped[int] = mapped_column(primary_key=True,
                                     autoincrement=True,
                                     nullable=False)
     
-    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    employer: Mapped[str] = mapped_column(String(200),
+                                          nullable=False)
+    title: Mapped[str] = mapped_column(String(200),
+                                       nullable=False)
+    status: Mapped[ApplicationStatus] = mapped_column(sqlEnum(ApplicationStatus, name="application_status"),
+                                                       nullable=False,
+                                                       default=ApplicationStatus.NOT_APPLIED)
+    description: Mapped[str] = mapped_column(Text,
+                                             nullable=True)
+    location: Mapped[str] = mapped_column(String(200),
+                                          nullable=False)
+    deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                               nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                 nullable=False,
+                                                 server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                                 nullable=False,
+                                                 server_default=func.now())
+    
+    user: Mapped["User"] = relationship(
+        back_populates="jobs"
+    )
+    assessments: Mapped[List["Assessment"]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan"
+    )
+    
+class Assessment(Base):
+    __tablename__ = "assessments"
+
+    job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id"),
+                                        nullable=False,
+                                        index=True)
+    id: Mapped[int] = mapped_column(primary_key=True,
+                                    nullable=False,
+                                    autoincrement=True)
+    type: Mapped[AssessmentType] = mapped_column(sqlEnum(AssessmentType, name="assessment_type"),
+                                                 nullable=False)
+    completed: Mapped[bool] = mapped_column(nullable=False,
+                                            default=False)
+    deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
+                                               nullable=True)
+    user: Mapped["User"] = relationship(
+        back_populates="assessments"
+    )
+    job: Mapped["Job"] = relationship(
+        back_populates="assessments"
+    )
     
     
