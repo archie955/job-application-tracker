@@ -9,7 +9,7 @@ from server.authentication import auth
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/create", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
-async def create_user(user: schemas.UserCreate,
+def create_user(user: schemas.UserCreate,
                 db: Session = Depends(get_db)
                 ):
     if db.query(models.User).filter(models.User.email == user.email).first():
@@ -27,7 +27,7 @@ async def create_user(user: schemas.UserCreate,
     return new_user
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
-async def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
+def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(get_db)
                 ):
     user = db.query(models.User).filter(models.User.email == user_credentials.username).first()
@@ -50,8 +50,8 @@ async def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
     return response_object
 
 
-@router.delete("/delete/{id}", status_code=status.HTTP_200_OK, response_model=schemas.UserDelete)
-async def delete_user(db: Session = Depends(get_db),
+@router.delete("/delete/{current_user.id}", status_code=status.HTTP_200_OK, response_model=schemas.UserDelete)
+def delete_user(db: Session = Depends(get_db),
                       current_user: models.User = Depends(auth.get_current_user)
                       ):
 
@@ -64,3 +64,6 @@ async def delete_user(db: Session = Depends(get_db),
                                          )
 
     return response_object
+
+
+# @router.put("/update/{current_user.id}")
