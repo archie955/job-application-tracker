@@ -27,5 +27,6 @@ class UserOut(BaseModel):
     class Config:
         from_attributes = True
 
-class UserLogin(UserCreate):
-    pass
+class UserDelete(BaseModel):
+    deleted: str
+    user: UserOut
