@@ -9,6 +9,8 @@ def hash(password: str):
 def verify(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+def check_email(email1, email2):
+    return email1 == email2
 
 if __name__ == "__main__":
     hashed_pwd = hash(settings.database_password)

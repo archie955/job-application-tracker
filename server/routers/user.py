@@ -16,15 +16,18 @@ def create_user(user: schemas.UserCreate,
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="This email is already used"
                             )
-    user.password = utils.hash(user.password)
+    hashed_password = utils.hash(user.password)
     
-    new_user = models.User(**user.model_dump())
+    new_user = models.User(
+        email=user.email,
+        hashed_password=hashed_password
+    )
 
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
-    return new_user
+    return schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at)
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
@@ -43,27 +46,62 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
     
     access_token = auth.create_access_token(data = {"user_id": user.id})
 
-    response_object = schemas.Token(access_token=access_token,
-                                    token_type="bearer"
-                                    )
-
-    return response_object
+    return schemas.Token(access_token=access_token, token_type="bearer")
 
 
-@router.delete("/delete/{current_user.id}", status_code=status.HTTP_200_OK, response_model=schemas.UserDelete)
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(db: Session = Depends(get_db),
                       current_user: models.User = Depends(auth.get_current_user)
                       ):
 
     db.delete(current_user)
     db.commit()
-    db.refresh()
 
-    response_object = schemas.UserDelete(deleted="successfully deleted",
-                                         user=current_user
-                                         )
-
-    return response_object
+    return
 
 
-# @router.put("/update/{current_user.id}")
+@router.put("/me/email", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
+def update_user_email(new_email: schemas.UpdateEmail,
+                db: Session = Depends(get_db),
+                current_user: models.User = Depends(auth.get_current_user)
+                ):
+    same_email = utils.check_email(new_email.email,
+                                   current_user.email
+                                   )
+
+    if same_email:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="This is the same email"
+                            )
+    
+    if db.query(models.User).filter(models.User.email == new_email.email).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="This email is already in use"
+                            )
+
+    current_user.email = new_email.email
+
+    db.commit()
+
+    return schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at)
+
+@router.put("/me/password", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
+def update_user_password(new_password: schemas.UpdatePassword,
+                         db: Session = Depends(get_db),
+                         current_user: models.User = Depends(auth.get_current_user)
+                         ):
+    same_password = utils.verify(new_password.password,
+                                 current_user.hashed_password
+                                 )
+
+    if same_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="This is the same password"
+                            )
+    
+    current_user.hashed_password = utils.hash(new_password.password)
+
+    db.commit()
+
+    return schemas.UserOut(id=current_user.id, email=current_user.email, created_at=current_user.created_at)
+

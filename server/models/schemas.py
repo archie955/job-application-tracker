@@ -28,5 +28,10 @@ class UserOut(BaseModel):
         from_attributes = True
 
 class UserDelete(BaseModel):
-    deleted: str
-    user: UserOut
+    detail: str
+
+class UpdateEmail(BaseModel):
+    email: EmailStr
+
+class UpdatePassword(BaseModel):
+    password: str
