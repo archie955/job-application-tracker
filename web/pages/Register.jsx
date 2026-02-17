@@ -32,6 +32,7 @@ const Register = () => {
             setPassword={setPassword}
             showPassword={showPassword}
             setShowPassword={setShowPassword}
+            action={"Register"}
             />
         </div>
     )

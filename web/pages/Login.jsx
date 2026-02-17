@@ -32,6 +32,7 @@ const Login = () => {
             setPassword={setPassword}
             showPassword={showPassword}
             setShowPassword={setShowPassword}
+            action={"Login"}
             />
         </div>
     )

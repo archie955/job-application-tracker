@@ -2,7 +2,7 @@ const LoginForm = (props) => {
     return (
         <form onSubmit={props.loginFunction}>
             <div>
-                <h2>Login</h2>
+                <h2>{props.action}</h2>
             </div>
             <div>
                 email: <input
@@ -19,7 +19,7 @@ const LoginForm = (props) => {
                     onChange={e => props.setPassword(e.target.value)}/>
                 <button type="button" onClick={props.setShowPassword}>{props.showPassword ? "Hide":"Show"}</button>
             </div>
-            <button type="submit">Login</button>
+            <button type="submit">{props.action}</button>
         </form>
     )
 }
