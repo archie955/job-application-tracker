@@ -21,6 +21,10 @@ const Register = () => {
         }
     }
 
+    const switchToLogin = () => {
+        navigate("/login")
+    }
+
     return (
         <div>
         <h2>{error}</h2>
@@ -34,6 +38,7 @@ const Register = () => {
             setShowPassword={setShowPassword}
             action={"Register"}
             />
+        <button type="button" onClick={switchToLogin}>Login?</button>
         </div>
     )
 }

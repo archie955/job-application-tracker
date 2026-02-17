@@ -21,6 +21,10 @@ const Login = () => {
         }
     }
 
+    const switchToCreate = () => {
+        navigate("/register")
+    }
+
     return (
         <div>
         <h2>{error}</h2>
@@ -34,6 +38,7 @@ const Login = () => {
             setShowPassword={setShowPassword}
             action={"Login"}
             />
+        <button type="button" onClick={switchToCreate}>Create Account?</button>
         </div>
     )
 }
