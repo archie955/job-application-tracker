@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=JSONResponse)
 def create_user(user: schemas.UserCreate,
                 db: Session = Depends(get_db)
                 ):
@@ -28,7 +28,7 @@ def create_user(user: schemas.UserCreate,
     db.commit()
     db.refresh(new_user)
 
-    return schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at)
+    return JSONResponse(content=schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at))
 
 
 
@@ -138,7 +138,7 @@ def delete_user(db: Session = Depends(get_db),
 
 
 
-@router.put("/me/email", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
+@router.put("/me/email", status_code=status.HTTP_200_OK, response_model=JSONResponse)
 def update_user_email(new_email: schemas.UpdateEmail,
                 db: Session = Depends(get_db),
                 current_user: models.User = Depends(auth.get_current_user)
@@ -161,11 +161,11 @@ def update_user_email(new_email: schemas.UpdateEmail,
 
     db.commit()
 
-    return schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at)
+    return JSONResponse(content=schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at))
 
 
 
-@router.put("/me/password", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
+@router.put("/me/password", status_code=status.HTTP_200_OK, response_model=JSONResponse)
 def update_user_password(new_password: schemas.UpdatePassword,
                          db: Session = Depends(get_db),
                          current_user: models.User = Depends(auth.get_current_user)
@@ -183,5 +183,5 @@ def update_user_password(new_password: schemas.UpdatePassword,
 
     db.commit()
 
-    return schemas.UserOut(id=current_user.id, email=current_user.email, created_at=current_user.created_at)
+    return JSONResponse(content=schemas.UserOut(id=current_user.id, email=current_user.email, created_at=current_user.created_at))
 
