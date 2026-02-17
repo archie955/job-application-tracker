@@ -10,16 +10,23 @@ class User(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True,
                                     autoincrement=True,
-                                    nullable=False)
+                                    nullable=False
+                                    )
     email: Mapped[str] = mapped_column(String(100),
                                        unique=True,
                                        nullable=False,
-                                       index=True)
+                                       index=True
+                                       )
     hashed_password: Mapped[str] = mapped_column(String(200),
-                                          nullable=False)
+                                          nullable=False
+                                          )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                  nullable=False,
-                                                 server_default=func.now())
+                                                 server_default=func.now()
+                                                 )
+    hashed_refresh_token: Mapped[str] = mapped_column(Text,
+                                                      nullable=True
+                                                      )
     jobs: Mapped[List["Job"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
@@ -40,30 +47,40 @@ class Job(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"),
                                          nullable=False,
-                                         index=True)
+                                         index=True
+                                         )
     id: Mapped[int] = mapped_column(primary_key=True,
                                     autoincrement=True,
-                                    nullable=False)
+                                    nullable=False
+                                    )
     
     employer: Mapped[str] = mapped_column(String(200),
-                                          nullable=False)
+                                          nullable=False
+                                          )
     title: Mapped[str] = mapped_column(String(200),
-                                       nullable=False)
+                                       nullable=False
+                                       )
     status: Mapped[ApplicationStatus] = mapped_column(sqlEnum(ApplicationStatus, name="application_status"),
                                                        nullable=False,
-                                                       default=ApplicationStatus.NOT_APPLIED)
+                                                       default=ApplicationStatus.NOT_APPLIED
+                                                       )
     description: Mapped[str] = mapped_column(Text,
-                                             nullable=True)
+                                             nullable=True
+                                             )
     location: Mapped[str] = mapped_column(String(200),
-                                          nullable=False)
+                                          nullable=False
+                                          )
     deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                               nullable=True)
+                                               nullable=True
+                                               )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                  nullable=False,
-                                                 server_default=func.now())
+                                                 server_default=func.now()
+                                                 )
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                  nullable=False,
-                                                 server_default=func.now())
+                                                 server_default=func.now()
+                                                 )
     
     user: Mapped["User"] = relationship(
         back_populates="jobs"
@@ -78,18 +95,24 @@ class Assessment(Base):
 
     job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id"),
                                         nullable=False,
-                                        index=True)
+                                        index=True
+                                        )
     id: Mapped[int] = mapped_column(primary_key=True,
                                     nullable=False,
-                                    autoincrement=True)
+                                    autoincrement=True
+                                    )
     type: Mapped[AssessmentType] = mapped_column(sqlEnum(AssessmentType, name="assessment_type"),
-                                                 nullable=False)
+                                                 nullable=False
+                                                 )
     description: Mapped[str] = mapped_column(Text,
-                                             nullable=True)
+                                             nullable=True
+                                             )
     completed: Mapped[bool] = mapped_column(nullable=False,
-                                            default=False)
+                                            default=False
+                                            )
     deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                               nullable=True)
+                                               nullable=True
+                                               )
     user: Mapped["User"] = relationship(
         back_populates="assessments"
     )

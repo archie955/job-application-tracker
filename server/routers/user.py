@@ -1,10 +1,11 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, Request
 from server.models import models, schemas
 from server.database.database import get_db
 from sqlalchemy.orm import Session
 from server.utils import utils
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from server.authentication import auth
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -29,7 +30,9 @@ def create_user(user: schemas.UserCreate,
 
     return schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at)
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
+
+
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=JSONResponse)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(get_db)
                 ):
@@ -44,9 +47,83 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
                             detail="Invalid Username or Password"
                             )
     
-    access_token = auth.create_access_token(data = {"user_id": user.id})
+    access_token = auth.create_access_token(data = {"sub": user.id})
+    refresh_token = auth.create_refresh_token(data = {"sub": user.id})
 
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    user.hashed_refresh_token = utils.hash(refresh_token)
+    db.commit()
+
+    response = JSONResponse(
+        content=schemas.Token(access_token=access_token, token_type="bearer")
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+
+    return response
+
+
+
+@router.post("/refresh", status_code=status.HTTP_200_OK, response_model=JSONResponse)
+def refresh_token(request: Request,
+                  db: Session = Depends(get_db)
+                  ):
+    refresh_token = request.cookies.get("refresh_token")
+
+    if not refresh_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Missing refresh token"
+                            )
+    
+    payload = auth.decode_token(refresh_token)
+
+    if payload.get("type") != "refresh":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid token type"
+                            )
+    
+    user_id = payload.get("sub")
+
+    if user_id is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid token payload"
+                            )
+    
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User not found"
+                            )
+
+    if not utils.verify(refresh_token, user.hashed_refresh_token):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid refresh token"
+                            )
+    
+    new_refresh = auth.create_refresh_token({"sub": user.id})
+    user.hashed_refresh_token = utils.hash(new_refresh)
+    db.commit()
+
+    new_access = auth.create_access_token({"sub": user.id})
+
+    response = JSONResponse(content=schemas.Token(access_token=new_access, token_type="bearer"))
+
+    response.set_cookie(
+        key="refresh",
+        value=new_refresh,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+
+    return response
+
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
@@ -58,6 +135,7 @@ def delete_user(db: Session = Depends(get_db),
     db.commit()
 
     return
+
 
 
 @router.put("/me/email", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
@@ -84,6 +162,8 @@ def update_user_email(new_email: schemas.UpdateEmail,
     db.commit()
 
     return schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at)
+
+
 
 @router.put("/me/password", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 def update_user_password(new_password: schemas.UpdatePassword,

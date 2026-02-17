@@ -13,12 +13,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
+REFRESH_TOKEN_EXPIRE_DAYS = settings.refresh_token_expire_days
+CREDENTIALS_EXCEPTION = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                      detail="Could not validate credentials",
+                                      headers={"WWW-Authenticate": "Bearer"}
+                                      )
 
 def create_access_token(data: dict):
     to_encode = data.copy()
 
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
 
     encoded_jwt = jwt.encode(to_encode,
                              SECRET_KEY,
@@ -27,41 +32,54 @@ def create_access_token(data: dict):
 
     return encoded_jwt
 
-def verify_access_token(token: str,
-                        credentials_exception
-                        ):
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+
+    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire, "type": "refresh"})
+
+    encoded_jwt = jwt.encode(to_encode,
+                             SECRET_KEY,
+                             algorithm=ALGORITHM
+                             )
+    return encoded_jwt
+
+def decode_token(token: str):
     try:
         payload = jwt.decode(token,
-                             SECRET_KEY, 
+                             SECRET_KEY,
                              algorithms=[ALGORITHM]
                              )
-        id: str = payload.get("sub")
-
-        if id is None:
-            raise credentials_exception
-        
-        token_data = TokenData(id=id)
-        return token_data
-    
+        return payload
     except jwt.exceptions.InvalidTokenError:
-        raise credentials_exception
+        raise CREDENTIALS_EXCEPTION
+
+
+def verify_access_token(token: str
+                        ):
+    payload = decode_token(token)
+
+    if payload.get("type") != "access":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid token type"
+                            )
     
-def get_current_user(token: str = Depends(oauth2_scheme),
-                           db: Session = Depends(get_db)
-                           ):
-    credentials_exceptions = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                           detail=f"Could not validate credentials",
-                                           headers={"WWW-Authenticate": "Bearer"}
-                                           )
-    token = verify_access_token(token,
-                                credentials_exception=credentials_exceptions
+    user_id = str(payload.get("sub"))
+
+    if not user_id:
+        raise CREDENTIALS_EXCEPTION
+    
+    return TokenData(id=user_id)
+    
+def get_current_user(token: str = Depends(oauth2_scheme), 
+                     db: Session = Depends(get_db)
+                     ):
+    user_id_token = verify_access_token(token=token
                                 )
 
-    user = db.query(models.User).filter(models.User.id == token.id).first()
+    user = db.query(models.User).filter(models.User.id == user_id_token.id).first()
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail=f"User does not exist"
-                            )
+        raise CREDENTIALS_EXCEPTION
     
     return user
