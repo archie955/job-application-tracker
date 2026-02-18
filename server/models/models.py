@@ -31,10 +31,6 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
-    assessments: Mapped[List["Assessment"]] = relationship(
-        back_populates="user",
-        cascade="all, delete-orphan"
-    )
     
 
     
@@ -113,9 +109,6 @@ class Assessment(Base):
     deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                nullable=True
                                                )
-    user: Mapped["User"] = relationship(
-        back_populates="assessments"
-    )
     job: Mapped["Job"] = relationship(
         back_populates="assessments"
     )
