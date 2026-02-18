@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { LoginForm } from "../components/LoginForm"
+import LoginForm from "../components/LoginForm"
+import { useAuth } from "../components/AuthProvider"
 
 const Login = () => {
     const { login } = useAuth()
@@ -22,7 +23,11 @@ const Login = () => {
     }
 
     const switchToCreate = () => {
-        navigate("/register")
+        navigate("/")
+    }
+
+    const changeShowPassword = () => {
+        setShowPassword(!showPassword)
     }
 
     return (
@@ -35,7 +40,7 @@ const Login = () => {
             password={password}
             setPassword={setPassword}
             showPassword={showPassword}
-            setShowPassword={setShowPassword}
+            setShowPassword={changeShowPassword}
             action={"Login"}
             />
         <button type="button" onClick={switchToCreate}>Create Account?</button>

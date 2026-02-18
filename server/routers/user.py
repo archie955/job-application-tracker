@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=JSONResponse)
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate,
                 db: Session = Depends(get_db)
                 ):
@@ -28,11 +28,11 @@ def create_user(user: schemas.UserCreate,
     db.commit()
     db.refresh(new_user)
 
-    return JSONResponse(content=schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at))
+    return schemas.UserOut(id=new_user.id, email=new_user.email, created_at=new_user.created_at)
 
 
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=JSONResponse)
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(get_db)
                 ):
@@ -54,7 +54,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
     db.commit()
 
     response = JSONResponse(
-        content=schemas.Token(access_token=access_token, token_type="bearer")
+        content=schemas.Token(access_token=access_token, token_type="bearer").model_dump()
     )
 
     response.set_cookie(
@@ -69,7 +69,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
 
 
 
-@router.post("/refresh", status_code=status.HTTP_200_OK, response_model=JSONResponse)
+@router.post("/refresh", status_code=status.HTTP_200_OK, response_model=schemas.Token)
 def refresh_token(request: Request,
                   db: Session = Depends(get_db)
                   ):
@@ -112,7 +112,9 @@ def refresh_token(request: Request,
 
     new_access = auth.create_access_token({"sub": user.id})
 
-    response = JSONResponse(content=schemas.Token(access_token=new_access, token_type="bearer"))
+    response = JSONResponse(
+        content=schemas.Token(access_token=new_access, token_type="bearer").model_dump()
+        )
 
     response.set_cookie(
         key="refresh",
@@ -138,7 +140,7 @@ def delete_user(db: Session = Depends(get_db),
 
 
 
-@router.put("/me/email", status_code=status.HTTP_200_OK, response_model=JSONResponse)
+@router.put("/me/email", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 def update_user_email(new_email: schemas.UpdateEmail,
                 db: Session = Depends(get_db),
                 current_user: models.User = Depends(auth.get_current_user)
@@ -161,11 +163,11 @@ def update_user_email(new_email: schemas.UpdateEmail,
 
     db.commit()
 
-    return JSONResponse(content=schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at))
+    return schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at)
 
 
 
-@router.put("/me/password", status_code=status.HTTP_200_OK, response_model=JSONResponse)
+@router.put("/me/password", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 def update_user_password(new_password: schemas.UpdatePassword,
                          db: Session = Depends(get_db),
                          current_user: models.User = Depends(auth.get_current_user)
@@ -183,5 +185,5 @@ def update_user_password(new_password: schemas.UpdatePassword,
 
     db.commit()
 
-    return JSONResponse(content=schemas.UserOut(id=current_user.id, email=current_user.email, created_at=current_user.created_at))
+    return schemas.UserOut(id=current_user.id, email=current_user.email, created_at=current_user.created_at)
 

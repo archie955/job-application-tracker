@@ -1,10 +1,10 @@
-require('dotenv').config()
 import axios from "axios"
 
+const BASEURL = import.meta.env.VITE_BASEURL
 
 
 const api = axios.create({
-    baseURL: process.env.BASEURL,
+    baseURL: BASEURL,
     withCredentials: true
 })
 

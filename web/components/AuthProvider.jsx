@@ -7,20 +7,20 @@ import {
 
 const AuthContext = createContext()
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null)
 
     const login = async (email, password) => {
-        const response = await api.post("/login", { email, password })
+        const response = await api.post("/users/login", { email, password })
         setToken(response.data.access_token)
     }
 
     const register = async (email, password) => {
-        await api.post("/register", { email, password })
+        await api.post("/users/register", { email, password })
     }
 
     const refreshToken = async () => {
-        const response = await api.post("/refresh")
+        const response = await api.post("/users/refresh")
         setToken(response.data.access_token)
     }
 
@@ -31,6 +31,4 @@ const AuthProvider = ({ children }) => {
     )
 }
 
-const useAuth = () => useContext(AuthContext)
-
-export default { AuthProvider, useAuth }
+export const useAuth = () => useContext(AuthContext)

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { LoginForm } from "../components/LoginForm"
+import LoginForm from "../components/LoginForm"
+import { useAuth } from "../components/AuthProvider"
 
 const Register = () => {
     const { register } = useAuth()
@@ -15,7 +16,7 @@ const Register = () => {
         e.preventDefault()
         try {
             await register(email, password)
-            navigate("/home")
+            navigate("/login")
         } catch (err) {
             setError("Invalid credentials")
         }
@@ -23,6 +24,10 @@ const Register = () => {
 
     const switchToLogin = () => {
         navigate("/login")
+    }
+
+    const changeShowPassword = () => {
+        setShowPassword(!showPassword)
     }
 
     return (
@@ -35,7 +40,7 @@ const Register = () => {
             password={password}
             setPassword={setPassword}
             showPassword={showPassword}
-            setShowPassword={setShowPassword}
+            setShowPassword={changeShowPassword}
             action={"Register"}
             />
         <button type="button" onClick={switchToLogin}>Login?</button>
