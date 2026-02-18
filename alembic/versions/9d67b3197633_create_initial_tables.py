@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from server.models.models import application_status, assessment_type
 
 # revision identifiers, used by Alembic.
 revision: str = '9d67b3197633'
@@ -19,23 +19,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-
-    # enums
-    # Enum.create() actually creates the Enum in postgres from the sqlalchemy
-    # Enum. op.get_bind returns the database connection, therefore creating
-    # the SQL Enum in the right database
-    application_status = sa.Enum(
-        "NOT_APPLIED", "APPLIED", "INTERVIEW", "REJECTED", "SUCCESSFUL",
-        name="application_status"
-    )
-    application_status.create(op.get_bind())
-
-    assessment_type = sa.Enum(
-        "ONLINE_ASSESSMENT", "INTERVIEW", "ASSESSMENT CENTRE",
-        name="assessment_type"
-    )
-    assessment_type.create(op.get_bind())
-
     # users table
 
     op.create_table(
@@ -52,8 +35,9 @@ def upgrade() -> None:
     op.create_table(
         "jobs",
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("id", primary_key=True, autoincrement=True, nullable=False),
+        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True, nullable=False),
         sa.Column("employer", sa.String(length=200), nullable=False),
+        sa.Column("title", sa.String(length=200), nullable=False),
         sa.Column("status", application_status, nullable=False, default="NOT_APPLIED"),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("location", sa.String(length=200), nullable=False),
@@ -85,5 +69,4 @@ def downgrade() -> None:
     op.drop_table("assessments")
     op.drop_table("jobs")
     op.drop_table("users")
-    sa.Enum(name="application_status").drop(op.get_bind())
-    sa.Enum(name="assessment_type").drop(op.get_bind())
+

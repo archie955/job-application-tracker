@@ -5,6 +5,9 @@ from datetime import datetime
 from ..database.database import Base
 from .datatypes import AssessmentType, ApplicationStatus
 
+application_status = sqlEnum(ApplicationStatus, name="application_status")
+assessment_type = sqlEnum(AssessmentType, name="assessment_type")
+
 class User(Base):
     __tablename__ = "users"
     
@@ -38,7 +41,8 @@ class User(Base):
 class Job(Base):
     __tablename__ = "jobs"
     __table_args__ = (
-        UniqueConstraint("user_id", "employer", "title")
+        UniqueConstraint("user_id", "employer", "title"),
+
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"),
@@ -56,7 +60,7 @@ class Job(Base):
     title: Mapped[str] = mapped_column(String(200),
                                        nullable=False
                                        )
-    status: Mapped[ApplicationStatus] = mapped_column(sqlEnum(ApplicationStatus, name="application_status"),
+    status: Mapped[ApplicationStatus] = mapped_column(application_status,
                                                        nullable=False,
                                                        default=ApplicationStatus.NOT_APPLIED
                                                        )
@@ -97,7 +101,7 @@ class Assessment(Base):
                                     nullable=False,
                                     autoincrement=True
                                     )
-    type: Mapped[AssessmentType] = mapped_column(sqlEnum(AssessmentType, name="assessment_type"),
+    type: Mapped[AssessmentType] = mapped_column(assessment_type,
                                                  nullable=False
                                                  )
     description: Mapped[str] = mapped_column(Text,
