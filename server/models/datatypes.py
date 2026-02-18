@@ -10,6 +10,7 @@ class AssessmentType(str, Enum):
 class ApplicationStatus(str, Enum):
     NOT_APPLIED = "not_applied"
     APPLIED = "applied"
+    INTERVIEW = "interview"
     REJECTED = "rejected"
     SUCCESSFUL = "successful"
 
