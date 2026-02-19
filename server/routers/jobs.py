@@ -9,7 +9,7 @@ router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
 
 
-@router.post("/create", status_code=status.HTTP_201_OK, response_model=schemas.JobComplete)
+@router.post("/create", status_code=status.HTTP_200_OK, response_model=schemas.JobComplete)
 def create_job(job: schemas.Job,
                db: Session = Depends(get_db),
                user: models.User = Depends(get_current_user)
@@ -70,7 +70,7 @@ def delete_job(id: int,
 
 
 
-@router.update("/update/{id}", status_code=status.HTTP_200_OK, response_model=schemas.JobComplete)
+@router.put("/update/{id}", status_code=status.HTTP_200_OK, response_model=schemas.JobComplete)
 def update_job(id: int,
                new_job_info: schemas.Job,
                db: Session = Depends(get_db),

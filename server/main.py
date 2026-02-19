@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from server.routers import user
+from server.routers import user, jobs
 from server.utils.config import settings
 
 app = FastAPI()
@@ -17,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(user.router)
+app.include_router(jobs.router)
 
 @app.get("/")
 def root():

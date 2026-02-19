@@ -47,8 +47,8 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
                             detail="Invalid Username or Password"
                             )
     
-    access_token = auth.create_access_token(data = {"sub": user.id})
-    refresh_token = auth.create_refresh_token(data = {"sub": user.id})
+    access_token = auth.create_access_token(data = {"sub": str(user.id)})
+    refresh_token = auth.create_refresh_token(data = {"sub": str(user.id)})
 
     user.hashed_refresh_token = utils.hash(refresh_token)
     db.commit()
@@ -61,7 +61,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
 
@@ -121,11 +121,11 @@ def refresh_token(request: Request,
                             detail="Invalid refresh token"
                             )
     
-    new_refresh = auth.create_refresh_token({"sub": user.id})
+    new_refresh = auth.create_refresh_token({"sub": str(user.id)})
     user.hashed_refresh_token = utils.hash(new_refresh)
     db.commit()
 
-    new_access = auth.create_access_token({"sub": user.id})
+    new_access = auth.create_access_token({"sub": str(user.id)})
 
     response = JSONResponse(
         content=schemas.Token(access_token=new_access, token_type="bearer").model_dump()
@@ -135,7 +135,7 @@ def refresh_token(request: Request,
         key="refresh",
         value=new_refresh,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
 

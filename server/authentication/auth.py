@@ -64,9 +64,9 @@ def verify_access_token(token: str
                             detail="Invalid token type"
                             )
     
-    user_id = str(payload.get("sub"))
+    user_id = payload.get("sub")
 
-    if not user_id:
+    if user_id is None:
         raise CREDENTIALS_EXCEPTION
     
     return TokenData(id=user_id)
