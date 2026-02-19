@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from server.database.database import get_db
 from server.authentication.auth import get_current_user
 from typing import List
-from sqlalchemy import func
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -25,7 +24,7 @@ def create_job(job: schemas.Job,
 
 
 
-@router.get("/get", status_code=status.HTTP_200_OK, response_model=List[schemas.JobComplete])
+@router.get("/get", status_code=status.HTTP_200_OK, response_model=List[schemas.JobDetail])
 def get_jobs(db: Session = Depends(get_db),
              user: models.User = Depends(get_current_user),
              limit: int = 10,
@@ -33,8 +32,10 @@ def get_jobs(db: Session = Depends(get_db),
              ):
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id)\
            .order_by(models.Job.updated_at.desc()).limit(limit).offset(skip).all()
+    
+    res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
 
-    return jobs
+    return res
 
 
 
@@ -100,13 +101,24 @@ def update_job(id: int,
 def get_not_applied_jobs(db: Session = Depends(get_db),
                          user: models.User = Depends(get_current_user)
                          ):
-    jobs = db.query(models.Job).filter(models.Job.status == "not_applied")\
-           .order_by(models.Job.deadline).all()
+    jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
+                                       models.Job.status == "not_applied")\
+                                       .order_by(models.Job.deadline).all()
     res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
 
     return res
 
 
 
+@router.get("/get/deadlines", status_code=status.HTTP_200_OK, response_model=List[schemas.JobDetail])
+def get_applied_jobs(db: Session = Depends(get_db),
+                     user: models.User = Depends(get_current_user)
+                     ):
+    jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
+                                       models.Job.status != "not_applied")\
+                                       .all()
+    res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
+    
+    return res
 
 
