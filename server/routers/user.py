@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from server.utils import utils
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from server.authentication import auth
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -64,6 +64,21 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
         secure=True,
         samesite="lax"
     )
+
+    return response
+
+
+
+@router.get("/logout")
+def logout(db: Session = Depends(get_db),
+           user: models.User = Depends(auth.get_current_user)
+           ):
+    response = RedirectResponse(
+        "return to login page", status_code=status.HTTP_302_FOUND
+    )
+    response.delete_cookie(key="refresh_token")
+    user.hashed_refresh_token = None
+    db.commit()
 
     return response
 
