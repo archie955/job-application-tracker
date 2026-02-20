@@ -49,16 +49,14 @@ class Job(BaseModel):
     description: Optional[str] = None
     location: str
     deadline: Optional[datetime] = None
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
-
-class JobCreate(Job):
-    user_id: int
     
-class JobComplete(JobCreate):
+class JobComplete(Job):
+    user_id: int
     id: int
 
 class Assessment(BaseModel):
@@ -67,7 +65,7 @@ class Assessment(BaseModel):
     type: AssessmentType
     description: str
     completed: bool
-    deadline: Optional[datetime]
+    deadline: Optional[datetime] = None
     
     class Config:
         from_attributes = True

@@ -74,7 +74,7 @@ def logout(db: Session = Depends(get_db),
            user: models.User = Depends(auth.get_current_user)
            ):
     response = RedirectResponse(
-        "return to login page", status_code=status.HTTP_302_FOUND
+        "logout", status_code=status.HTTP_302_FOUND
     )
     response.delete_cookie(key="refresh_token")
     user.hashed_refresh_token = None

@@ -48,9 +48,9 @@ export const AuthProvider = ({ children }) => {
         return response.data
     }
 
-    const createJob = async (data) => {
-        const response = await api.post("/jobs/create")
-        return response
+    const createJob = async (job) => {
+        const response = await api.post("/jobs/create", job)
+        return response.data
     }
 
     return (

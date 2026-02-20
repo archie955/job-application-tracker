@@ -20,7 +20,7 @@ def create_job(job: schemas.Job,
     db.commit()
     db.refresh(new_job)
 
-    return schemas.JobComplete(new_job)
+    return schemas.JobComplete.model_validate(new_job)
 
 
 
