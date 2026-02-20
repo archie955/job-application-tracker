@@ -34,7 +34,7 @@ def get_jobs(db: Session = Depends(get_db),
            .order_by(models.Job.updated_at.desc()).limit(limit).offset(skip).all()
     
     res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
-
+    
     return res
 
 

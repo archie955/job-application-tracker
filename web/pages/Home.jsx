@@ -27,9 +27,9 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getJobs()
-                setJobs(jobs)
-                console.log(jobs)
+                jobsResponse = await getJobs()
+                setJobs(jobsResponse)
+                console.log(jobsResponse)
                 setLoading(false)
             } catch (err) {
                 console.log(err)
@@ -37,7 +37,7 @@ const Home = () => {
             }
         }
         fetchData()
-    })
+    }, [])
 
     if (loading) {
         return <h1>Loading...</h1>

@@ -68,6 +68,9 @@ class Assessment(BaseModel):
     description: str
     completed: bool
     deadline: datetime
+    
+    class Config:
+        from_attributes = True
 
 class JobDetail(BaseModel):
     job: JobComplete

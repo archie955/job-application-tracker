@@ -44,9 +44,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const getJobs = async () => {
-        const jobs = await api.get("/jobs/get")
-
-        return jobs
+        const response = await api.get("/jobs/get")
+        return response.data
     }
 
     const createJob = async (data) => {
