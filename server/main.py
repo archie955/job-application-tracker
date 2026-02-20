@@ -5,6 +5,9 @@ from server.utils.config import settings
 
 app = FastAPI()
 origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
     settings.backend_url
 ]
 

@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 
     const getJobs = async () => {
         const jobs = await api.get("/jobs/get")
+
         return jobs
     }
 
