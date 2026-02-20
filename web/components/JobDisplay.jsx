@@ -15,14 +15,14 @@ const DisplayJobs = ({ jobs }) => {
                 </tr>
             </thead>
             <tbody>
-                {jobs.map(jobnet => 
-                    <tr key={jobnet.job.id}>
-                        <th>{jobnet.job.title}</th>
-                        <th>{jobnet.job.employer}</th>
-                        <th>{jobnet.job.location}</th>
-                        <th>{jobnet.job.status}</th>
-                        <th>{jobnet.job.deadline ? job.deadline : "None"}</th>
-                        <th>{jobnet.assessments ? jobnet.assessments.length : 0}</th>
+                {jobs.map(job => 
+                    <tr key={job.id}>
+                        <th>{job.title}</th>
+                        <th>{job.employer}</th>
+                        <th>{job.location}</th>
+                        <th>{job.status}</th>
+                        <th>{job.deadline ? job.deadline : "None"}</th>
+                        <th>{job.assessments ? job.assessments.length : 0}</th>
                     </tr>
                 )}
             </tbody>

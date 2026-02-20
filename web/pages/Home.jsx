@@ -27,7 +27,7 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                jobsResponse = await getJobs()
+                const jobsResponse = await getJobs()
                 setJobs(jobsResponse)
                 console.log(jobsResponse)
                 setLoading(false)

@@ -33,7 +33,16 @@ def get_jobs(db: Session = Depends(get_db),
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id)\
            .order_by(models.Job.updated_at.desc()).limit(limit).offset(skip).all()
     
-    res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
+    res = [schemas.JobDetail(id=job.id,
+                             user_id=job.user_id,
+                             employer=job.employer,
+                             title=job.title,
+                             description=job.description,
+                             location=job.location,
+                             deadline=job.deadline,
+                             created_at=job.created_at,
+                             updated_at=job.updated_at,
+                             assessments=job.assessments) for job in jobs]
     
     return res
 
@@ -46,9 +55,19 @@ def get_job(id: int,
             ):
     job = db.query(models.Job).filter(models.Job.user_id == user.id,
                                       models.Job.id == id).first()
-    assessments = db.query(models.Assessment).filter(models.Assessment.job_id == id).all()
 
-    return schemas.JobDetail(job=job, assessments=assessments)
+    res = schemas.JobDetail(id=job.id,
+                             user_id=job.user_id,
+                             employer=job.employer,
+                             title=job.title,
+                             description=job.description,
+                             location=job.location,
+                             deadline=job.deadline,
+                             created_at=job.created_at,
+                             updated_at=job.updated_at,
+                             assessments=job.assessments)
+
+    return res
     
 
 
@@ -104,7 +123,16 @@ def get_not_applied_jobs(db: Session = Depends(get_db),
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
                                        models.Job.status == "not_applied")\
                                        .order_by(models.Job.deadline).all()
-    res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
+    res = [schemas.JobDetail(id=job.id,
+                             user_id=job.user_id,
+                             employer=job.employer,
+                             title=job.title,
+                             description=job.description,
+                             location=job.location,
+                             deadline=job.deadline,
+                             created_at=job.created_at,
+                             updated_at=job.updated_at,
+                             assessments=job.assessments) for job in jobs]
 
     return res
 
@@ -117,7 +145,16 @@ def get_applied_jobs(db: Session = Depends(get_db),
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
                                        models.Job.status != "not_applied")\
                                        .all()
-    res = [schemas.JobDetail(job=job, assessments=job.assessments) for job in jobs]
+    res = [schemas.JobDetail(id=job.id,
+                             user_id=job.user_id,
+                             employer=job.employer,
+                             title=job.title,
+                             description=job.description,
+                             location=job.location,
+                             deadline=job.deadline,
+                             created_at=job.created_at,
+                             updated_at=job.updated_at,
+                             assessments=job.assessments) for job in jobs]
     
     return res
 

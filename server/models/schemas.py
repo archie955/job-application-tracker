@@ -49,8 +49,8 @@ class Job(BaseModel):
     description: Optional[str] = None
     location: str
     deadline: Optional[datetime] = None
-    created_at: Optional[datetime] = datetime.now(timezone.utc)
-    updated_at: Optional[datetime] = datetime.now(timezone.utc)
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True
@@ -67,13 +67,12 @@ class Assessment(BaseModel):
     type: AssessmentType
     description: str
     completed: bool
-    deadline: datetime
+    deadline: Optional[datetime]
     
     class Config:
         from_attributes = True
 
-class JobDetail(BaseModel):
-    job: JobComplete
+class JobDetail(JobComplete):
     assessments: Optional[List[Assessment]] = None
 
 
