@@ -61,7 +61,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,
+        secure=False, # true in prod
         samesite="lax"
     )
 
@@ -73,8 +73,8 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
 def logout(db: Session = Depends(get_db),
            user: models.User = Depends(auth.get_current_user)
            ):
-    response = RedirectResponse(
-        "logout", status_code=status.HTTP_302_FOUND
+    response = JSONResponse(
+        content={"message": "successfully logged out"}
     )
     response.delete_cookie(key="refresh_token")
     user.hashed_refresh_token = None
@@ -132,7 +132,7 @@ def refresh_token(request: Request,
         )
 
     response.set_cookie(
-        key="refresh",
+        key="refresh_token",
         value=new_refresh,
         httponly=True,
         secure=False,

@@ -8,12 +8,41 @@ const api = axios.create({
     withCredentials: true
 })
 
-export const setAuthToken = (token) => {
-    if (token) {
-        api.defaults.headers.common["Authorization"] = `Bearer ${token}`
-    } else {
-        delete api.defaults.headers.common["Authorization"]
-    }
+export const setupInterceptors = (getAccessToken, setAccessToken) => {
+    api.interceptors.request.use((config) => {
+        const token = getAccessToken()
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+    })
+
+    api.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error.config
+
+            if (error.response?.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true
+
+                try {
+                    const res = await api.post("/refresh")
+                    const newAccess = res.data.access_token
+
+                    setAccessToken(newAccess)
+
+                    originalRequest.headers.Authorization = `Bearer ${newAccess}`
+
+                    return api(originalRequest)
+                } catch (err) {
+                    setAccessToken(null)
+                    return Promise.reject(err)
+                }
+            }
+
+            return Promise.reject(error)
+        }
+    )
 }
 
 export default api

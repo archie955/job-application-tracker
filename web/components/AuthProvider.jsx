@@ -1,14 +1,38 @@
-import api, { setAuthToken } from '../services/api'
+import api, { setupInterceptors } from '../services/api'
 import { 
     useState,
     createContext,
-    useContext
+    useContext,
+    useEffect
 } from 'react'
 
 const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        setupInterceptors(() => token,
+            (newToken) => setToken(newToken)
+        )
+    }, [token])
+
+    useEffect(() => {
+        const refresh = async () => {
+            try {
+                const response = await api.post("/users/refresh")
+                setToken(response.data.access_token)
+            } catch {
+                setToken(null)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        refresh()
+    }, [])
+
 
     const login = async (email, password) => {
         const formData = new URLSearchParams()
@@ -25,22 +49,15 @@ export const AuthProvider = ({ children }) => {
         const accessToken = response.data.access_token
         
         setToken(accessToken)
-        setAuthToken(accessToken)
     }
 
     const logout = async () => {
         await api.get("/users/logout")
         setToken(null)
-        setAuthToken(null)
     }
 
     const register = async (email, password) => {
         await api.post("/users/register", { email, password })
-    }
-
-    const refreshToken = async () => {
-        const response = await api.post("/users/refresh")
-        setToken(response.data.access_token)
     }
 
     const getJobs = async () => {
@@ -53,8 +70,12 @@ export const AuthProvider = ({ children }) => {
         return response.data
     }
 
+    if (loading) {
+        return null
+    }
+
     return (
-        <AuthContext.Provider value={{ token, login, logout, register, refreshToken, getJobs, createJob }}>
+        <AuthContext.Provider value={{ token, login, logout, register, getJobs, createJob }}>
             {children}
         </AuthContext.Provider>
     )
