@@ -79,7 +79,8 @@ class Job(Base):
                                                  )
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
                                                  nullable=False,
-                                                 server_default=func.now()
+                                                 server_default=func.now(),
+                                                 onupdate=func.now()
                                                  )
     
     user: Mapped["User"] = relationship(
