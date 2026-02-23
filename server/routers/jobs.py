@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from server.database.database import get_db
 from server.authentication.auth import get_current_user
 from typing import List
+from server.models.datatypes import ApplicationStatus
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -120,7 +121,7 @@ def get_not_applied_jobs(db: Session = Depends(get_db),
                          user: models.User = Depends(get_current_user)
                          ):
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
-                                       models.Job.status == "not_applied")\
+                                       models.Job.status == ApplicationStatus.NOT_APPLIED)\
                                        .order_by(models.Job.deadline).all()
     res = [schemas.JobDetail(id=job.id,
                              user_id=job.user_id,
@@ -142,7 +143,7 @@ def get_applied_jobs(db: Session = Depends(get_db),
                      user: models.User = Depends(get_current_user)
                      ):
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id,
-                                       models.Job.status != "not_applied")\
+                                       models.Job.status != ApplicationStatus.NOT_APPLIED)\
                                        .all()
     res = [schemas.JobDetail(id=job.id,
                              user_id=job.user_id,
