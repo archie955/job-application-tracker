@@ -58,6 +58,8 @@ class Job(BaseModel):
 class JobComplete(Job):
     user_id: int
     id: int
+    class Config:
+        from_attributes = True
 
 class Assessment(BaseModel):
     job_id: int

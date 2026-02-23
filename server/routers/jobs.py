@@ -107,12 +107,11 @@ def update_job(id: int,
     job.description = new_job_info.description
     job.location = new_job_info.location
     job.deadline = new_job_info.deadline
-    job.updated_at = new_job_info.updated_at
 
     db.commit()
     db.refresh(job)
 
-    return job
+    return schemas.JobComplete.model_validate(job)
 
 
 
