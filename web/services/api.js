@@ -26,7 +26,7 @@ export const setupInterceptors = (getAccessToken, setAccessToken) => {
                 originalRequest._retry = true
 
                 try {
-                    const res = await api.post("/refresh")
+                    const res = await api.post("/users/refresh")
                     const newAccess = res.data.access_token
 
                     setAccessToken(newAccess)
