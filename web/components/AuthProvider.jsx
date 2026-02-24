@@ -70,6 +70,15 @@ export const AuthProvider = ({ children }) => {
         return response.data
     }
 
+    const deleteJob = async (id) => {
+        await api.delete(`/jobs/delete/${id}`)
+    }
+
+    const updateJob = async (id, job) => {
+        const response = await api.put(`/jobs/update/${id}`, job)
+        return response.data
+    }
+
     if (loading) {
         return null
     }
