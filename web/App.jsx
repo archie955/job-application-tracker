@@ -3,6 +3,7 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Home from "./pages/Home"
 import { AuthProvider } from "./components/AuthProvider"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 const App = () => {
     return(
@@ -10,7 +11,11 @@ const App = () => {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Register />} />
-                <Route path="/home" element={<Home />} />
+                <Route path="/home" element={
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                    } />
             </Routes>
         </AuthProvider>
     )
