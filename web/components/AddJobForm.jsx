@@ -33,7 +33,7 @@ const JobForm = (props) => {
     }
     return (
         <form onSubmit={handleSubmit}>
-            <h2>Add a new job</h2>
+            <h2>{props.formpurpose}</h2>
             <div>
                 Job Title: <Input inp={props.title} setInp={props.setTitle} />
                 Employer: <Input inp={props.employer} setInp={props.setEmployer} />

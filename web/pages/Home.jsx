@@ -10,7 +10,7 @@ import JobForm from "../components/AddJobForm"
 
 const Home = () => {
     const navigate = useNavigate()
-    const { logout, getJobs, createJob } = useAuth()
+    const { logout, getJobs, createJob, updateJob } = useAuth()
 
     const [jobs, setJobs] = useState([])
     const [loading, setLoading] = useState(true)
@@ -22,6 +22,9 @@ const Home = () => {
     const [description, setDescription] = useState("")
     const [location, setLocation] = useState("")
 
+    const [editingJobId, setEditingJobId] = useState(null)
+
+
     const handleLogout = async (e) => {
         e.preventDefault()
         try {
@@ -32,20 +35,35 @@ const Home = () => {
         }
     }
 
-    const handleCreateJob = async (newJob) => {
-        const job = await createJob(newJob)
-        setJobs(prev => [...prev, job])
+    const resetForm = () => {
         setTitle("")
         setEmployer("")
         setStatus(ApplicationStatus.Not_Applied)
         setDescription("")
         setLocation("")
+        setEditingJobId(null)
     }
 
-    const handleUpdateParent = async (job) => {
-        const handleUpdate = async () => {
-            // fill
-        }
+    const handleCreateJob = async (newJob) => {
+        const job = await createJob(newJob)
+        setJobs(prev => [...prev, job])
+        resetForm()
+    }
+
+    const handleUpdateJob = async (updatedJob) => {
+        if (editingJobId === null) return
+        const updated = await updateJob(editingJobId, updatedJob)
+        setJobs((prev) => prev.map(job => job.id === editingJobId ? updated : job))
+        resetForm()
+    }
+
+    const handleEditJob = (job) => {
+        setTitle(job.title)
+        setEmployer(job.employer)
+        setStatus(job.status)
+        setDescription(job.description)
+        setLocation(job.location)
+        setEditingJobId(job.id)
     }
 
     useEffect(() => {
@@ -71,14 +89,15 @@ const Home = () => {
         <div>
             <h1>{error}</h1>
             <h2>Jobs table</h2>
-            <DisplayJobs jobs={jobs}/>
+            <DisplayJobs jobs={jobs} handleEditJob={handleEditJob}/>
             <button type="button" onClick={handleLogout}>Logout</button>
             <JobForm title={title} setTitle={setTitle}
                 employer={employer} setEmployer={setEmployer}
                 location={location} setLocation={setLocation}
                 description={description} setDescription={setDescription}
                 status={status} setStatus={setStatus} 
-                submitFunction={handleCreateJob} />
+                submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
+                formpurpose={editingJobId ? "Edit job" : "Add a new job"} />
         </div>
     )
 }
