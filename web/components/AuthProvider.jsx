@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         setupInterceptors(() => token,
             (newToken) => setToken(newToken)
         )
-    }, [token])
+    }, [])
 
     useEffect(() => {
         const refresh = async () => {
