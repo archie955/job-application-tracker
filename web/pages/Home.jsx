@@ -42,6 +42,12 @@ const Home = () => {
         setLocation("")
     }
 
+    const handleUpdateParent = async (job) => {
+        const handleUpdate = async () => {
+            // fill
+        }
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             try {

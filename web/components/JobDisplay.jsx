@@ -1,4 +1,4 @@
-const DisplayJobs = ({ jobs }) => {
+const DisplayJobs = ({ jobs, updateFunction }) => {
     if (jobs.length === 0) {
         return <h2>You have no jobs</h2>
     }
@@ -23,6 +23,7 @@ const DisplayJobs = ({ jobs }) => {
                         <th>{job.status}</th>
                         <th>{job.deadline ? job.deadline : "None"}</th>
                         <th>{job.assessments ? job.assessments.length : 0}</th>
+                        <button type="button" onClick={updateFunctionParent(job)}>Update</button>
                     </tr>
                 )}
             </tbody>
