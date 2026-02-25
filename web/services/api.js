@@ -22,7 +22,11 @@ export const setupInterceptors = (getAccessToken, setAccessToken) => {
         async (error) => {
             const originalRequest = error.config
 
-            if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes("/users/refresh")) {
+            if (error.response?.status === 401 && 
+                !originalRequest._retry && 
+                !originalRequest.url.includes("/users/refresh") && 
+                !originalRequest.url.includes("/users/login")
+            ) {
                 originalRequest._retry = true
 
                 try {
