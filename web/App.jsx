@@ -4,6 +4,7 @@ import Register from "./pages/Register"
 import Home from "./pages/Home"
 import { AuthProvider } from "./components/AuthProvider"
 import ProtectedRoute from "./components/ProtectedRoute"
+import './styling/styles.css'
 
 const App = () => {
     return(
