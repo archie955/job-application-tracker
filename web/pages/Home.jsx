@@ -67,7 +67,7 @@ const Home = () => {
     }
 
     const handleDeleteJob = async (jobToDelete) => {
-        await deleteJob(jobToDelete)
+        await deleteJob(jobToDelete.id)
         setJobs((prev) => prev.filter(job => job.id !== jobToDelete.id))
         resetForm()
     }
