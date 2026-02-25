@@ -10,7 +10,7 @@ import JobForm from "../components/AddJobForm"
 
 const Home = () => {
     const navigate = useNavigate()
-    const { logout, getJobs, createJob, updateJob } = useAuth()
+    const { logout, getJobs, createJob, updateJob, deleteJob } = useAuth()
 
     const [jobs, setJobs] = useState([])
     const [loading, setLoading] = useState(true)
@@ -66,6 +66,12 @@ const Home = () => {
         setEditingJobId(job.id)
     }
 
+    const handleDeleteJob = async (jobToDelete) => {
+        await deleteJob(jobToDelete)
+        setJobs((prev) => prev.filter(job => job.id !== jobToDelete.id))
+        resetForm()
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -89,7 +95,7 @@ const Home = () => {
         <div>
             <h1>{error}</h1>
             <h2>Jobs table</h2>
-            <DisplayJobs jobs={jobs} handleEditJob={handleEditJob}/>
+            <DisplayJobs jobs={jobs} handleEditJob={handleEditJob} handleDeleteJob={handleDeleteJob}/>
             <button type="button" onClick={handleLogout}>Logout</button>
             <JobForm title={title} setTitle={setTitle}
                 employer={employer} setEmployer={setEmployer}
