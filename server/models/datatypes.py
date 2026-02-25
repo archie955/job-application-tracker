@@ -2,15 +2,15 @@ from enum import Enum
 
 
 class AssessmentType(str, Enum):
-    ONLINE_ASSESSMENT = "online_assessment"
-    INTERVIEW = "interview"
-    ASSESSMENT_CENTRE = "assessment_centre"
+    ONLINE_ASSESSMENT = "ONLINE_ASSESSMENT"
+    INTERVIEW = "INTERVIEW"
+    ASSESSMENT_CENTRE = "ASSESSMENT_CENTRE"
 
 
 class ApplicationStatus(str, Enum):
-    NOT_APPLIED = "not_applied"
-    APPLIED = "applied"
-    INTERVIEW = "interview"
-    REJECTED = "rejected"
-    SUCCESSFUL = "successful"
+    NOT_APPLIED = "NOT_APPLIED"
+    APPLIED = "APPLIED"
+    INTERVIEW = "INTERVIEW"
+    REJECTED = "REJECTED"
+    SUCCESSFUL = "SUCCESSFUL"
 

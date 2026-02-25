@@ -1,9 +1,9 @@
 const ApplicationStatus = {
-    Not_Applied: "not_applied",
-    Applied: "applied",
-    Interview: "interview",
-    Rejected: "rejected",
-    Successful: "successful"
+    Not_Applied: "NOT_APPLIED",
+    Applied: "APPLIED",
+    Interview: "INTERVIEW",
+    Rejected: "REJECTED",
+    Successful: "SUCCESSFUL"
 }
 
 export default ApplicationStatus

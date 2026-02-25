@@ -98,6 +98,7 @@ const Home = () => {
                 status={status} setStatus={setStatus} 
                 submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
                 formpurpose={editingJobId ? "Edit job" : "Add a new job"} />
+            {editingJobId ? <button type="button" onClick={resetForm}>Switch to create</button> : null}
         </div>
     )
 }
