@@ -4,6 +4,9 @@ FROM node:20-alpine as builder
 # working directory
 WORKDIR /app
 
+ARG VITE_BASEURL
+ENV VITE_BASEURL=${VITE_BASEURL}
+
 # copy package.json deps and install deps
 COPY package*.json ./
 RUN npm install
@@ -17,15 +20,15 @@ FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-COPY wait-for-it.sh /usr/local/bin/wait-for-it
-RUN chmod +x /usr/local/bin/wait-for-it
+# COPY wait-for-it.sh /usr/local/bin/wait-for-it
+# RUN chmod +x /usr/local/bin/wait-for-it
 
 # this is the networking issue resolution
-COPY nginx.conf /etc/nginx/nginx/conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-RUN echo "Starting wait-for-it script..."
+# RUN echo "Starting wait-for-it script..."
 
-CMD /usr/local/bin/wait-for-it jobtracker_backend:8000 -- nginx -g 'daemon off;'
+CMD ["nginx", "-g", "daemon off;"]
 

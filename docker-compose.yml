@@ -32,9 +32,10 @@ services:
       - react-backend-net
 
   frontend:
-    build: ./web
-    env_file:
-      - .env
+    build:
+      context: ./web
+      args:
+        VITE_BASEURL: /api
     container_name: jobtracker_frontend
     depends_on:
       - backend

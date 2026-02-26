@@ -10,7 +10,7 @@ WORKDIR /server
 ENV PYTHONPATH=/server
 
 # install system dependencies for psycopg2
-RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc libpq-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # copy requirements
 COPY requirements.txt requirements.txt
@@ -19,6 +19,9 @@ COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
 # finally copy the rest of the app
 COPY . .
 
@@ -26,4 +29,4 @@ COPY . .
 EXPOSE 8000
 
 # startup command
-CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["/usr/local/bin/wait-for-it", "db", "5432", "sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]
