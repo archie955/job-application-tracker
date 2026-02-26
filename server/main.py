@@ -5,7 +5,8 @@ from server.utils.config import settings
 
 app = FastAPI()
 origins = [
-    settings.backend_url
+    settings.backend_url,
+    settings.nginx_baseurl
 ]
 
 app.add_middleware(

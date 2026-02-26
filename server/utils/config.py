@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int
     vite_baseurl: str
     backend_url: str
+    nginx_baseurl: str
 
 
     class Config:
