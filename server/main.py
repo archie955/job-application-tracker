@@ -6,6 +6,7 @@ from utils.config import settings
 app = FastAPI()
 origins = [
     settings.backend_url,
+    settings.frontend_url,
     settings.nginx_baseurl
 ]
 

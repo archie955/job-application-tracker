@@ -30,4 +30,5 @@ jobvenv
 project-plan.md
 .env
 **__pycache__*
-.env.prod
+.env.dev
+web/nginx.conf

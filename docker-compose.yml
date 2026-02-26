@@ -11,6 +11,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - react-backend-net
 
   backend:
     build: ./server
@@ -26,6 +28,8 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
     ports:
       - "8000:8000"
+    networks:
+      - react-backend-net
 
   frontend:
     build: ./web
@@ -36,8 +40,12 @@ services:
       - backend
     ports:
       - "5173:80"
-    environment:
-      - VITE_BASEURL=http://jobtracker_backend:8000
+    networks:
+      - react-backend-net
+
+networks:
+  react-backend-net:
+    driver: bridge
 
 volumes:
   postgres_data:

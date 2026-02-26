@@ -17,7 +17,15 @@ FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
+# this is the networking issue resolution
+COPY nginx.conf /etc/nginx/nginx/conf
+
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN echo "Starting wait-for-it script..."
+
+CMD /usr/local/bin/wait-for-it jobtracker_backend:8000 -- nginx -g 'daemon off;'
 
