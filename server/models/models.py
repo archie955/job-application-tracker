@@ -2,8 +2,8 @@ from sqlalchemy import String, ForeignKey, DateTime, Text, func, Enum as sqlEnum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import List
 from datetime import datetime
-from ..database.database import Base
-from .datatypes import AssessmentType, ApplicationStatus
+from database.database import Base
+from models.datatypes import AssessmentType, ApplicationStatus
 
 application_status = sqlEnum(ApplicationStatus, name="application_status")
 assessment_type = sqlEnum(AssessmentType, name="assessment_type")

@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
   backend:
     build: ./server
@@ -36,6 +36,8 @@ services:
       - backend
     ports:
       - "5173:80"
+    environment:
+      - VITE_BASEURL=http://jobtracker_backend:8000
 
 volumes:
   postgres_data:

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timezone
-from server.models.datatypes import AssessmentType, ApplicationStatus
+from models.datatypes import AssessmentType, ApplicationStatus
 
 # Token model
 

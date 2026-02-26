@@ -7,6 +7,7 @@ ENV PYTHONBUFFERED=1
 
 # working directory
 WORKDIR /server
+ENV PYTHONPATH=/server
 
 # install system dependencies for psycopg2
 RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*

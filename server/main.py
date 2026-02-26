@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from server.routers import user, jobs
-from server.utils.config import settings
+from routers import user, jobs
+from utils.config import settings
 
 app = FastAPI()
 origins = [
