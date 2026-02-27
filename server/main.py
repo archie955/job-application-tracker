@@ -4,6 +4,11 @@ from routers import user, jobs
 from utils.config import settings
 from database.database import engine
 from sqlalchemy import text
+from utils.logging_config import setup_logging
+import logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 origins = [
