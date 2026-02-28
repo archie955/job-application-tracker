@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from routers import user, jobs
 from utils.config import settings
@@ -6,6 +6,8 @@ from database.database import engine
 from sqlalchemy import text
 from utils.logging_config import setup_logging
 import logging
+from fastapi.responses import JSONResponse
+
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -27,6 +29,22 @@ app.add_middleware(
 
 app.include_router(user.router)
 app.include_router(jobs.router)
+
+@app.exception_handler(Exception)
+async def global_expression_handler(request: Request):
+    logger.error(
+        "Unhandled exception occurred",
+        exc_info=True,
+        extra={
+            "path": request.url.path,
+            "method": request.method
+        }
+    )
+
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error"}
+    )
 
 @app.get("/health")
 async def health():
