@@ -5,6 +5,9 @@ from database.database import get_db
 from authentication.auth import get_current_user
 from typing import List
 from models.datatypes import ApplicationStatus
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -15,12 +18,14 @@ def create_job(job: schemas.Job,
                db: Session = Depends(get_db),
                user: models.User = Depends(get_current_user)
                ):
+    logger.info("Job creation attempt", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
     new_job = models.Job(user_id=user.id, **job.model_dump())
 
     db.add(new_job)
     db.commit()
     db.refresh(new_job)
 
+    logger.info("Successful job creation", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
     return schemas.JobComplete.model_validate(new_job)
 
 
@@ -31,6 +36,7 @@ def get_jobs(db: Session = Depends(get_db),
              limit: int = 10,
              skip: int = 0
              ):
+    logger.info("Get jobs request", extra={"user_id": user.id})
     jobs = db.query(models.Job).filter(models.Job.user_id == user.id)\
            .order_by(models.Job.updated_at.desc()).limit(limit).offset(skip).all()
     
@@ -46,6 +52,8 @@ def get_jobs(db: Session = Depends(get_db),
                              updated_at=job.updated_at,
                              assessments=job.assessments) for job in jobs]
     
+    logger.info("Successful get jobs request", extra={"user_id": user.id})
+    
     return res
 
 
@@ -58,6 +66,7 @@ def get_job(id: int,
     job = db.query(models.Job).filter(models.Job.user_id == user.id,
                                       models.Job.id == id).first()
 
+    logger.info("Get single job request", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
     res = schemas.JobDetail(id=job.id,
                              user_id=job.user_id,
                              employer=job.employer,
@@ -68,6 +77,8 @@ def get_job(id: int,
                              created_at=job.created_at,
                              updated_at=job.updated_at,
                              assessments=job.assessments)
+    
+    logger.info("Successful get single job request", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
 
     return res
     
@@ -78,14 +89,20 @@ def delete_job(id: int,
                db: Session = Depends(get_db),
                user: models.User = Depends(get_current_user)
                ):
+    logger.info("Delete job request", extra={"user_id": user.id, "job_id": id})    
+
     job = db.query(models.Job).filter(models.Job.user_id == user.id,
                                       models.Job.id == id).first()
+
     if not job:
+        logger.warning("Failed delete job request", extra={"user_id": user.id, "job_id": id})
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Job not found"
                             )
     db.delete(job)
     db.commit()
+
+    logger.info("Successful delete job request", extra={"user_id": user.id, "job_id": id})
 
     return
 
@@ -97,9 +114,12 @@ def update_job(id: int,
                db: Session = Depends(get_db),
                user: models.User = Depends(get_current_user)
                ):
+    logger.info("Update job request", extra={"user_id": user.id, "job_id": id})
+
     job = db.query(models.Job).filter(models.Job.user_id == user.id,
                                       models.Job.id == id).first()
     if not job:
+        logger.warning("Failed job update request", extra={"user_id": user.id, "job_id": id})
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Job not found"
                             )
@@ -112,6 +132,8 @@ def update_job(id: int,
 
     db.commit()
     db.refresh(job)
+
+    logger.info("Successful update job request", extra={"user_id": user.id, "job_id": id})
 
     return schemas.JobComplete.model_validate(job)
 
