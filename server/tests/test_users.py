@@ -22,7 +22,7 @@ def test_duplicate_registration(client):
     client.post("/users/register", json=user)
     response = client.post("/users/register", json=user)
 
-    assert response.status_code == 400
+    assert response.status_code == 409
 
 def test_login(client):
     user = {
@@ -31,7 +31,13 @@ def test_login(client):
     }
     client.post("/users/register", json=user)
 
-    response = client.post("/users/login", json=user)
+    response = client.post("/users/login",
+                           data={
+                               "username": user["email"],
+                               "password": user["password"]
+                               },
+                               headers={"Content-Type": "application/x-www-form-urlencoded"}
+                               )
 
     assert response.status_code == 200
 
@@ -54,7 +60,7 @@ def test_incorrect_login(client):
                                "password": "incorrectpassword"
                            }
                         )
-    assert response.status_code == 401
+    assert response.status_code == 403
     
 
 def test_logout(client, authenticated_user):
