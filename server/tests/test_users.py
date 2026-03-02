@@ -55,11 +55,12 @@ def test_incorrect_login(client):
     client.post("/users/register", json=user)
 
     response = client.post("/users/login",
-                           json={
-                               "email": "incorrect@example.com",
+                           data={
+                               "username": user["email"],
                                "password": "incorrectpassword"
-                           }
-                        )
+                               },
+                               headers={"Content-Type": "application/x-www-form-urlencoded"}
+                               )
     assert response.status_code == 403
     
 
@@ -134,6 +135,6 @@ def test_update_same_password(client, authenticated_user):
         headers={
             "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
-    )
+        )
 
     assert response.status_code == 400
