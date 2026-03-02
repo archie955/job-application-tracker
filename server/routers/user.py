@@ -222,7 +222,7 @@ def update_user_email(new_email: schemas.UpdateEmail,
 
     logger.info("Successful user update attempt", extra={"email": current_user.email})
 
-    return schemas.UserOut(id=current_user.id, email=new_email, created_at=current_user.created_at)
+    return schemas.UserOut(id=current_user.id, email=new_email.email, created_at=current_user.created_at)
 
 
 
