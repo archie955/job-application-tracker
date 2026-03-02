@@ -32,7 +32,7 @@ app.include_router(user.router)
 app.include_router(jobs.router)
 
 @app.exception_handler(Exception)
-async def global_expression_handler(request: Request):
+def global_expression_handler(request: Request, exc: Exception):
     logger.error(
         "Unhandled exception occurred",
         exc_info=True,
