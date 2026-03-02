@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from routers import user, jobs
 from utils.config import settings
-from database.database import engine
+from database.database import get_db
 from sqlalchemy import text
 from utils.logging_config import setup_logging
 import logging
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
 
 setup_logging()
@@ -47,12 +48,11 @@ async def global_expression_handler(request: Request):
     )
 
 @app.get("/health")
-async def health():
+def health(db: Session = Depends(get_db)):
     try:
-        with engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
+        db.execute(text("SELECT 1"))
         return {"status": "healthy"}
-    except Exception:
+    except:
         return {"status": "unhealthy"}
 
 @app.get("/")
