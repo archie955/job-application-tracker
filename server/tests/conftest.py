@@ -46,7 +46,7 @@ def authenticated_user(client):
         "password": "authpassword"
     }
 
-    client.post("/users/register", json="user")
+    client.post("/users/register", json=user)
 
     response = client.post("/users/login",
                            data={
