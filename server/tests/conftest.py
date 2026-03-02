@@ -38,3 +38,28 @@ def client(db):
         yield c
 
     app.dependency_overrides.clear()
+
+@pytest.fixture
+def authenticated_user(client):
+    user = {
+        "email": "authuser@example.com",
+        "password": "authpassword"
+    }
+
+    client.post("/users/register", json="user")
+
+    response = client.post("/users/login",
+                           data={
+                               "username": user["email"],
+                               "password": user["password"]
+                           },
+                           headers={"Content-Type": "application/x-www-form-urlencoded"}
+                        )
+    access_token = response.json()["access_token"]
+    refresh_token = response.cookies.get("refresh_token")
+
+    return {
+        "email": user["email"],
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
