@@ -60,6 +60,7 @@ def authenticated_user(client):
 
     return {
         "email": user["email"],
+        "password": user["password"],
         "access_token": access_token,
         "refresh_token": refresh_token
     }

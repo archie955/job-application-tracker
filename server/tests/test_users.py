@@ -131,7 +131,7 @@ def test_update_password(client, authenticated_user):
 
 def test_update_same_password(client, authenticated_user):
     response = client.put("/users/me/password",
-        json={"password": "securepassword"},
+        json={"password": authenticated_user["password"]},
         headers={
             "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
