@@ -60,7 +60,6 @@ def test_incorrect_login(client):
 def test_logout(client, authenticated_user):
     response = client.get("/users/logout",
                           headers={
-                              
                           "Authorization": f"Bearer {authenticated_user["access_token"]}"
                           }
                           )

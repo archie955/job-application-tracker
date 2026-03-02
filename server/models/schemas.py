@@ -1,7 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional, List
-from datetime import datetime, timezone
+from datetime import datetime
 from models.datatypes import AssessmentType, ApplicationStatus
+
+
+config = ConfigDict(from_attributes=True)
 
 # Token model
 
@@ -21,12 +24,13 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+
 class UserOut(BaseModel):
+    model_config = config
     id: int
     email: EmailStr
     created_at: datetime
-    class Config:
-        from_attributes = True
+
 
 class UserDelete(BaseModel):
     detail: str
@@ -42,7 +46,9 @@ class UpdatePassword(BaseModel):
 
 # jobs + assessments schemas
 
+
 class Job(BaseModel):
+    model_config = config
     employer: str
     title: str
     status: Optional[ApplicationStatus] = ApplicationStatus.NOT_APPLIED
@@ -52,25 +58,23 @@ class Job(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-    
+
 class JobComplete(Job):
+    model_config = config
     user_id: int
     id: int
-    class Config:
-        from_attributes = True
+
+
 
 class Assessment(BaseModel):
+    model_config = config
     job_id: int
     id: int
     type: AssessmentType
     description: str
     completed: bool
     deadline: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
+
 
 class JobDetail(JobComplete):
     assessments: Optional[List[Assessment]] = None
