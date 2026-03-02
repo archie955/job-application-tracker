@@ -10,7 +10,7 @@ from models.models import Base
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/test_db" # just a test database that gets made for tests then dropped immediately
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def engine():
     engine = create_engine(url=SQLALCHEMY_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
