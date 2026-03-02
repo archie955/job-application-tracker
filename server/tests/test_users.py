@@ -60,7 +60,7 @@ def test_incorrect_login(client):
 def test_logout(client, authenticated_user):
     response = client.get("/users/logout",
                           headers={
-                          "Authorization": f"Bearer {authenticated_user["access_token"]}"
+                          "Authorization": f"Bearer {authenticated_user['access_token']}"
                           }
                           )
     assert response.status_code == 200
@@ -86,7 +86,7 @@ def test_missing_refresh(client):
 def test_delete(client, authenticated_user):
     response = client.delete("/users/me",
                              headers={
-                                 "Authorization": f"Bearer {authenticated_user["access_token"]}"
+                                 "Authorization": f"Bearer {authenticated_user['access_token']}"
                              }
                              )
     assert response.status_code == 204
@@ -95,7 +95,7 @@ def test_update_email(client, authenticated_user):
     response = client.put("/users/me/email",
         json={"email": "newemail@example.com"},
         headers={
-            "Authorization": f"Bearer {authenticated_user["access_token"]}"
+            "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
         )
 
@@ -106,7 +106,7 @@ def test_update_same_email(client, authenticated_user):
     response = client.put("/users/me/email",
         json={"email": authenticated_user["email"]},
         headers={
-            "Authorization": f"Bearer {authenticated_user["access_token"]}"
+            "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
         )
 
@@ -116,7 +116,7 @@ def test_update_password(client, authenticated_user):
     response = client.put("/users/me/password",
         json={"password": "newsecurepassword"},
         headers={
-            "Authorization": f"Bearer {authenticated_user["access_token"]}"
+            "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
         )
 
@@ -126,7 +126,7 @@ def test_update_same_password(client, authenticated_user):
     response = client.put("/users/me/password",
         json={"password": "securepassword"},
         headers={
-            "Authorization": f"Bearer {authenticated_user["access_token"]}"
+            "Authorization": f"Bearer {authenticated_user['access_token']}"
         }
     )
 
