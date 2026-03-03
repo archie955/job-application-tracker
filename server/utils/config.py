@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     frontend_url: str
     backend_url: str
     nginx_baseurl: str
-    prod: bool
+    prod: bool = False
     model_config = ConfigDict(env_file=".env")
 
 
