@@ -65,6 +65,12 @@ def get_job(id: int,
             ):
     job = db.query(models.Job).filter(models.Job.user_id == user.id,
                                       models.Job.id == id).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
 
     logger.info("Get single job request", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
     res = schemas.JobDetail(id=job.id,
