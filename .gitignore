@@ -32,3 +32,4 @@ project-plan.md
 **__pycache__*
 .env.dev
 web/nginx.conf
+**pytest_cache*
