@@ -3,6 +3,7 @@ from models import models, schemas
 from database.database import get_db
 from sqlalchemy.orm import Session
 from utils import utils
+from utils.config import settings
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from authentication import auth
 from fastapi.responses import JSONResponse
@@ -75,8 +76,8 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(),
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False, # true in prod
-        samesite="lax"
+        secure=settings.prod, # true in prod, false in dev
+        samesite="strict" if settings.prod else "lax"
     )
 
     logger.info("Successful login attempt", extra={"email": user_credentials.username})
@@ -168,8 +169,8 @@ def refresh_token(request: Request,
         key="refresh_token",
         value=new_refresh,
         httponly=True,
-        secure=False,
-        samesite="lax"
+        secure=settings.prod, # true in prod
+        samesite="strict" if settings.prod else "lax"
     )
 
     logger.info("Successful refresh attempt", extra={"email": user.email})
