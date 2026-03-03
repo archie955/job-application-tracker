@@ -169,8 +169,8 @@ def refresh_token(request: Request,
         key="refresh_token",
         value=new_refresh,
         httponly=True,
-        secure=settings.prod, # true in prod
-        samesite="strict" if settings.prod else "lax"
+        secure=True if settings.prod == "prod" else False, # true in prod
+        samesite="strict" if settings.prod == "prod" else "lax"
     )
 
     logger.info("Successful refresh attempt", extra={"email": user.email})

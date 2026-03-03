@@ -17,8 +17,6 @@ services:
   backend:
     build:
       context: ./server
-      args:
-        PROD: False
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
