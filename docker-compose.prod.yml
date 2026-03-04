@@ -9,25 +9,19 @@ services:
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports: []
     networks:
       - react-backend-net
 
   backend:
-    build:
-      context: ./server
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    env_file:
-      - .env
+    image: archie955/job-tracker-backend:latest
     container_name: jobtracker_backend
+    restart: always
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
-      DATABASE_HOSTNAME: ${DATABASE_HOSTNAME}
+      DATABASE_HOSTNAME: db
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
@@ -37,15 +31,13 @@ services:
       - react-backend-net
 
   frontend:
-    build:
-      context: ./web
-      args:
-        VITE_BASEURL: /api
+    image: archie955/job-tracker-frontend:latest
     container_name: jobtracker_frontend
+    restart: always
     depends_on:
       - backend
     ports:
-      - "5173:80"
+      - "80:80"
     networks:
       - react-backend-net
 
