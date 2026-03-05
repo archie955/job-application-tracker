@@ -68,15 +68,20 @@ class JobComplete(Job):
 
 class Assessment(BaseModel):
     model_config = config
-    job_id: int
-    id: int
     type: AssessmentType
     description: str
     completed: bool
     deadline: Optional[datetime] = None
 
+class AssessmentComplete(Assessment):
+    model_config = config
+    job_id: int
+    id: int
+
+
 
 class JobDetail(JobComplete):
+    model_config = config
     assessments: Optional[List[Assessment]] = None
 
 
