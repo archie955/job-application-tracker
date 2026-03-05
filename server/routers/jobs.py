@@ -197,7 +197,7 @@ def get_applied_jobs(db: Session = Depends(get_db),
     return res
 
 
-@router.post("/{job_id}/create", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
+@router.post("/create/{job_id}", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
 def create_assessment(job_id: int,
                       assessment: schemas.Assessment,
                       db: Session = Depends(get_db),
@@ -222,7 +222,7 @@ def create_assessment(job_id: int,
     return schemas.AssessmentComplete.model_validate(new_assessment)
 
 
-@router.put("/{job_id}/{id}", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
+@router.put("/update/{job_id}/{id}", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
 def update_assessment(id: int,
                       job_id: int,
                       new_assessment_info: schemas.Assessment,
