@@ -215,7 +215,7 @@ def test_update_assessment(client, authenticated_user):
         "deadline": "2030-01-01"
     }
 
-    response = client.put(f"/jobs/update/{job["id"]}/{assessment["id"]}",
+    response = client.put(f"/jobs/update/{job['id']}/{assessment['id']}",
                           json=updated_assessment,
                           headers=auth_headers(authenticated_user)
                           )
@@ -252,7 +252,7 @@ def test_update_nonexistent_assessment(client, authenticated_user):
         "deadline": "2030-01-01"
     }
 
-    response = client.put(f"/jobs/update/{job["id"]}/9999",
+    response = client.put(f"/jobs/update/{job['id']}/9999",
                           json=updated_assessment,
                           headers=auth_headers(authenticated_user)
                           )
@@ -263,22 +263,22 @@ def test_delete_assessment(client, authenticated_user):
     job = create_sample_job(client, authenticated_user)
     assessment = create_sample_assessment(client, authenticated_user, job["id"])
 
-    response = client.delete(f"/jobs/delete/{job["id"]}/{assessment["id"]}",
+    response = client.delete(f"/jobs/delete/{job['id']}/{assessment['id']}",
                              headers=auth_headers(authenticated_user)
                              )
     assert response.status_code == 204
 
-    response = client.get(f"/jobs/get/{job["id"]}",
+    response = client.get(f"/jobs/get/{job['id']}",
                           headers=auth_headers(authenticated_user)
                           )
     data = response.json()
     
-    assert data["assessments"] is None
+    assert len(data["assessments"]) == 0
 
 def test_delete_nonexistent_assessment(client, authenticated_user):
     job = create_sample_job(client, authenticated_user)
 
-    response = client.delete(f"/jobs/delete/{job["id"]}/1",
+    response = client.delete(f"/jobs/delete/{job['id']}/1",
                              headers=auth_headers(authenticated_user)
                              )
     assert response.status_code == 404

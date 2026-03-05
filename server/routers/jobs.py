@@ -242,6 +242,10 @@ def update_assessment(id: int,
     
     if not assessment:
         logger.warning("Failed update assessment", extra={"user_id": user.id, "job_id": job_id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assessment not found"
+        )
 
     assessment.type = new_assessment_info.type
     assessment.description = new_assessment_info.description
@@ -274,6 +278,10 @@ def delete_assessment(id: int,
 
     if not assessment:
         logger.warning("Failed delete assessment", extra={"user_id": user.id, "job_id": job_id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assessment not found"
+        )
 
     db.delete(assessment)
     db.commit()
