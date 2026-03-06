@@ -1,5 +1,7 @@
 import pytest
-from models.datatypes import ApplicationStatus
+from models.datatypes import ApplicationStatus, AssessmentType
+
+# Could use a decorator to immediately check every request for auth? consider
 
 def auth_headers(authenticated_user):
     return {
@@ -18,6 +20,23 @@ def create_sample_job(client, authenticated_user, status=ApplicationStatus.NOT_A
 
     response = client.post("/jobs/create",
                            json=job,
+                           headers=auth_headers(authenticated_user)
+                           )
+    
+    assert response.status_code == 200
+    return response.json()
+
+def create_sample_assessment(client, authenticated_user, job_id, type=AssessmentType.ONLINE_ASSESSMENT):
+    assessment = {
+        "job_id": job_id,
+        "type": type,
+        "description": "Test description",
+        "completed": True,
+        "deadline": "2030-01-01"
+    }
+
+    response = client.post(f"/jobs/create/{job_id}",
+                           json=assessment,
                            headers=auth_headers(authenticated_user)
                            )
     
@@ -168,4 +187,107 @@ def test_delete_nonexistent_job(client, authenticated_user):
     )
 
     assert response.status_code == 404
+
+def test_create_assessment(client, authenticated_user):
+    job = create_sample_job(client, authenticated_user)
+
+    assessment = create_sample_assessment(client, authenticated_user, job["id"])
+
+    assert assessment["job_id"] == job["id"]
+    assert assessment["type"] == AssessmentType.ONLINE_ASSESSMENT
+    assert assessment["description"] == "Test description"
+    assert assessment["completed"] == True
+
+def test_create_assessment_requires_auth(client, authenticated_user):
+    response = client.post("/jobs/create/1", json={})
+    assert response.status_code == 401
+
+def test_update_assessment(client, authenticated_user):
+    job = create_sample_job(client, authenticated_user)
+
+    assessment = create_sample_assessment(client, authenticated_user, job["id"])
+
+    updated_assessment = {
+        "job_id": job["id"],
+        "type": AssessmentType.INTERVIEW,
+        "description": "Test description",
+        "completed": False,
+        "deadline": "2030-01-01"
+    }
+
+    response = client.put(f"/jobs/update/{job['id']}/{assessment['id']}",
+                          json=updated_assessment,
+                          headers=auth_headers(authenticated_user)
+                          )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["type"] == AssessmentType.INTERVIEW
+    assert data["completed"] == False
+
+def test_update_assessment_nonexistent_job(client, authenticated_user):
+    updated_assessment = {
+        "job_id": 1,
+        "type": AssessmentType.INTERVIEW,
+        "description": "Test description",
+        "completed": False,
+        "deadline": "2030-01-01"
+    }
+
+    response = client.put(f"/jobs/update/1/1",
+                          json=updated_assessment,
+                          headers=auth_headers(authenticated_user)
+                          )
+    
+    assert response.status_code == 404
+
+def test_update_nonexistent_assessment(client, authenticated_user):
+    job = create_sample_job(client, authenticated_user)
+
+    updated_assessment = {
+        "job_id": job["id"],
+        "type": AssessmentType.INTERVIEW,
+        "description": "Test description",
+        "completed": False,
+        "deadline": "2030-01-01"
+    }
+
+    response = client.put(f"/jobs/update/{job['id']}/9999",
+                          json=updated_assessment,
+                          headers=auth_headers(authenticated_user)
+                          )
+    
+    assert response.status_code == 404
+
+def test_delete_assessment(client, authenticated_user):
+    job = create_sample_job(client, authenticated_user)
+    assessment = create_sample_assessment(client, authenticated_user, job["id"])
+
+    response = client.delete(f"/jobs/delete/{job['id']}/{assessment['id']}",
+                             headers=auth_headers(authenticated_user)
+                             )
+    assert response.status_code == 204
+
+    response = client.get(f"/jobs/get/{job['id']}",
+                          headers=auth_headers(authenticated_user)
+                          )
+    data = response.json()
+    
+    assert len(data["assessments"]) == 0
+
+def test_delete_nonexistent_assessment(client, authenticated_user):
+    job = create_sample_job(client, authenticated_user)
+
+    response = client.delete(f"/jobs/delete/{job['id']}/1",
+                             headers=auth_headers(authenticated_user)
+                             )
+    assert response.status_code == 404
+
+    response = client.delete(f"/jobs/9999/1",
+                             headers=auth_headers(authenticated_user)
+                             )
+    
+    assert response.status_code == 404
+
+
 

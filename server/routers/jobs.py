@@ -21,6 +21,15 @@ def create_job(job: schemas.Job,
     logger.info("Job creation attempt", extra={"user_id": user.id, "employer": job.employer, "title": job.title})
     new_job = models.Job(user_id=user.id, **job.model_dump())
 
+    if db.query(models.Job).filter(models.Job.title == new_job.title,
+                                   models.Job.title == new_job.title,
+                                   models.Job.description == new_job.description).first():
+        logger.warning("Failed job creation", extra={"user_id": user.id})
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Job already exists"
+        )
+
     db.add(new_job)
     db.commit()
     db.refresh(new_job)
@@ -188,3 +197,95 @@ def get_applied_jobs(db: Session = Depends(get_db),
     return res
 
 
+@router.post("/create/{job_id}", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
+def create_assessment(job_id: int,
+                      assessment: schemas.Assessment,
+                      db: Session = Depends(get_db),
+                      user: models.User = Depends(get_current_user)
+                      ):
+    logger.info("Create assessment request", extra={"user_id": user.id, "job_id": job_id})
+
+    if not db.query(models.Job).filter(models.Job.id == job_id).first():
+        logger.warning("Assessment creation failed", extra={"user_id": user.id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
+    new_assessment = models.Assessment(job_id=job_id, **assessment.model_dump())
+    
+    db.add(new_assessment)
+    db.commit()
+    db.refresh(new_assessment)
+
+    logger.info("Successful assessment creation", extra={"user_id": user.id, "job_id": job_id})
+
+    return schemas.AssessmentComplete.model_validate(new_assessment)
+
+
+@router.put("/update/{job_id}/{id}", status_code=status.HTTP_200_OK, response_model=schemas.AssessmentComplete)
+def update_assessment(id: int,
+                      job_id: int,
+                      new_assessment_info: schemas.Assessment,
+                      db: Session = Depends(get_db),
+                      user: models.User = Depends(get_current_user)
+                      ):
+    logger.info("Update assessment request", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
+
+    if not db.query(models.Job).filter(models.Job.id == job_id).first():
+        logger.warning("Failed update assessment", extra={"user_id": user.id, "assessment_id": id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
+    
+    assessment = db.query(models.Assessment).filter(models.Assessment.id == id).first()
+    
+    if not assessment:
+        logger.warning("Failed update assessment", extra={"user_id": user.id, "job_id": job_id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assessment not found"
+        )
+
+    assessment.type = new_assessment_info.type
+    assessment.description = new_assessment_info.description
+    assessment.deadline = new_assessment_info.deadline
+    assessment.completed = new_assessment_info.completed
+
+    db.commit()
+    db.refresh(assessment)
+
+    logger.info("Successful update assessment", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
+
+    return schemas.AssessmentComplete.model_validate(assessment)
+
+@router.delete("/delete/{job_id}/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_assessment(id: int,
+                      job_id: int,
+                      db: Session = Depends(get_db),
+                      user: models.User = Depends(get_current_user)
+                      ):
+    logger.info("Delete assessment request", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
+
+    if not db.query(models.Job).filter(models.Job.id == job_id).first():
+        logger.info("Failed delete assessment", extra={"user_id": user.id, "assessment_id": id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
+    
+    assessment = db.query(models.Assessment).filter(models.Assessment.id == id).first()
+
+    if not assessment:
+        logger.warning("Failed delete assessment", extra={"user_id": user.id, "job_id": job_id})
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assessment not found"
+        )
+
+    db.delete(assessment)
+    db.commit()
+
+    logger.info("Successful delete assessment", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
+
+    return
