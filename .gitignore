@@ -32,3 +32,5 @@ project-plan.md
 **__pycache__*
 .env.dev
 **pytest_cache*
+ci_deploy_key
+ci_deploy_key.pub
