@@ -31,19 +31,28 @@ const Login = () => {
     }
 
     return (
-        <div>
-        <h2>{error}</h2>
-        <LoginForm
-            loginFunction={handleSubmit}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            showPassword={showPassword}
-            setShowPassword={changeShowPassword}
-            action={"Login"}
-            />
-        <button type="button" onClick={switchToCreate}>Create Account?</button>
+        <div className="auth-page">
+            <div className="auth-card">
+                {error && <div className="error">{error}</div>}
+
+                <LoginForm
+                    onSubmit={handleSubmit}
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    showPassword={showPassword}
+                    togglePassword={changeShowPassword}
+                    action="Login"
+                />
+
+                <p className="auth-switch">
+                    Don't have an account?
+                    <button onClick={switchToCreate}>
+                        Register
+                    </button>
+                </p>
+            </div>
         </div>
     )
 }

@@ -31,19 +31,28 @@ const Register = () => {
     }
 
     return (
-        <div>
-        <h2>{error}</h2>
-        <LoginForm
-            loginFunction={handleSubmit}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            showPassword={showPassword}
-            setShowPassword={changeShowPassword}
-            action={"Register"}
-            />
-        <button type="button" onClick={switchToLogin}>Login?</button>
+        <div className="auth-page">
+            <div className="auth-card">
+                {error && <div className="error">{error}</div>}
+
+                <LoginForm
+                    onSubmit={handleSubmit}
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    showPassword={showPassword}
+                    togglePassword={changeShowPassword}
+                    action="Register"
+                />
+                
+                <p className="auth-switch">
+                    Already have an account?
+                    <button onClick={switchToLogin}>
+                        Login
+                    </button>
+                </p>
+            </div>
         </div>
     )
 }
