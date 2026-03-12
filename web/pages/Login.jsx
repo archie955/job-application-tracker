@@ -23,7 +23,7 @@ const Login = () => {
     }
 
     const switchToCreate = () => {
-        navigate("/")
+        navigate("/register")
     }
 
     const changeShowPassword = () => {

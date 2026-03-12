@@ -85,26 +85,59 @@ const Home = () => {
             }
         }
         fetchData()
-    }, [])
+    }, [getJobs])
 
     if (loading) {
         return <h1>Loading...</h1>
     }
 
     return (
-        <div>
-            <h1>{error}</h1>
-            <h2>Jobs table</h2>
-            <DisplayJobs jobs={jobs} handleEditJob={handleEditJob} handleDeleteJob={handleDeleteJob}/>
-            <button type="button" onClick={handleLogout}>Logout</button>
-            <JobForm title={title} setTitle={setTitle}
-                employer={employer} setEmployer={setEmployer}
-                location={location} setLocation={setLocation}
-                description={description} setDescription={setDescription}
-                status={status} setStatus={setStatus} 
-                submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
-                formpurpose={editingJobId ? "Edit job" : "Add a new job"} />
-            {editingJobId ? <button type="button" onClick={resetForm}>Switch to create</button> : null}
+        <div className="home-container">
+            <header className="home-header">
+                <h1>Job Tracker</h1>
+
+                <button
+                    className="secondary-btn"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+            </header>
+
+            {error && <div className="error">{error}</div>}
+
+            <div className="home-grid">
+                <div className="jobs-section">
+                    <h2>Your Applications</h2>
+
+                    <DisplayJobs
+                        jobs={jobs}
+                        handleEditJob={handleEditJob}
+                        handleDeleteJob={handleDeleteJob}
+                    />
+                </div>
+
+                <div className="form-section">
+                    <JobForm
+                        title={title} setTitle={setTitle}
+                        employer={employer} setEmployer={setEmployer}
+                        location={location} setLocation={setLocation}
+                        description={description} setDescription={setDescription}
+                        status={status} setStatus={setStatus} 
+                        submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
+                        formpurpose={editingJobId ? "Edit job" : "Add a new job"}
+                    />
+
+                    {editingJobId && 
+                        <button
+                            className="secondary-btn"
+                            onClick={resetForm}
+                        >
+                            Cancel Edit
+                        </button>
+                    }
+                </div>
+            </div>
         </div>
     )
 }

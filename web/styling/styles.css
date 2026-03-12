@@ -103,12 +103,87 @@ input:focus {
   margin-left: 0.3rem;
 }
 
-table {
-  border-collapse: collapse;
+.jobs-table {
   width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
+.jobs-table th {
+  text-align: left;
+  background: #f3f4f6;
+}
+
+.jobs-table th,
+.jobs-table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.job-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.job-row:hover {
+  background: #f9fafb;
+}
+
+.assessment-row td {
+  background: #f9fafb;
+  padding: 1rem;
+}
+
+.assessment-table {
+  width: 100%;
+  border-collapse: collapse
+}
+
+.assessment-table th,
+.assessment-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.home-container {
+  padding: 2rem;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.home-header h1 {
+  margin: 0;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.jobs-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  height: fit-content;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1)
+}
+
+.job-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
 }

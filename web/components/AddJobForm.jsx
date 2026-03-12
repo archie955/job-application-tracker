@@ -32,9 +32,11 @@ const JobForm = (props) => {
         props.submitFunction(newJob)
     }
     return (
-        <form onSubmit={handleSubmit}>
+        <form 
+            onSubmit={handleSubmit}
+        >
             <h2>{props.formpurpose}</h2>
-            <div>
+            <div className="job-form">
                 Job Title: <Input inp={props.title} setInp={props.setTitle} />
                 Employer: <Input inp={props.employer} setInp={props.setEmployer} />
                 Application Status: <DropDown status={props.status} setStatus={props.setStatus}/>
