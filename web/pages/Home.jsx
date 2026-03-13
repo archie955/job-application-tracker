@@ -90,6 +90,7 @@ const Home = () => {
         resetForm()
         setJobOrAssessment(FormType.Assessment)
         setEditingAssessmentId(null)
+        setDescription("")
         setJobAssessmentId(job.id)
         setType(AssessmentType.Online_Assessment)
         setCompleted(false)
@@ -97,12 +98,13 @@ const Home = () => {
 
     const handleCreateAssessment = async (newAssessment) => {
         const updatedJob = await createAssessment(jobAssessmentId, newAssessment)
-        setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
+        setJobs(prev =>
+            prev.map(j => j.id === updatedJob.id ? updatedJob : j)
+        )
         resetForm()
     }
 
     const switchToEditAssessment = (job, assessment) => {
-        resetForm()
         setJobOrAssessment(FormType.Assessment)
         setEditingAssessmentId(assessment.id)
         setJobAssessmentId(job.id)
@@ -114,13 +116,17 @@ const Home = () => {
     const handleEditAssessment = async (assessment) => {
         if (editingAssessmentId === null || jobAssessmentId === null) return
         const updatedJob = await updateAssessment(jobAssessmentId, editingAssessmentId, assessment)
-        setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
+        setJobs(prev =>
+            prev.map(j => j.id === updatedJob.id ? updatedJob : j)
+        )
         resetForm()
     }
 
     const handleDeleteAssessment = async (job, assessment) => {
         const updatedJob = await deleteAssessment(job.id, assessment.id)
-        setJobs(jobs.map(j => j.id === updatedJob.id ? updatedJob : j))
+        setJobs(prev =>
+            prev.map(j => j.id === updatedJob.id ? updatedJob : j)
+        )
         resetForm()
     }
 
@@ -180,8 +186,8 @@ const Home = () => {
                             location={location} setLocation={setLocation}
                             description={description} setDescription={setDescription}
                             status={status} setStatus={setStatus} 
-                            submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
-                            formpurpose={editingJobId ? "Edit job" : "Add a new job"}
+                            submitFunction={editingJobId !== null ? handleUpdateJob : handleCreateJob}
+                            formpurpose={editingJobId !== null ? "Edit job" : "Add a new job"}
                         />
                     }
                     {(jobOrAssessment === FormType.Assessment) &&
@@ -189,8 +195,8 @@ const Home = () => {
                             type={type} setType={setType}
                             completed={completed} setCompleted={setCompleted}
                             description={description} setDescription={setDescription}
-                            submitFunction={editingAssessmentId ? handleEditAssessment : handleCreateAssessment}
-                            formpurpose={editingAssessmentId ? "Edit Assessment" : "Add a new assessment"}
+                            submitFunction={editingAssessmentId !== null ? handleEditAssessment : handleCreateAssessment}
+                            formpurpose={editingAssessmentId !== null ? "Edit Assessment" : "Add a new assessment"}
                         />
                     }
 

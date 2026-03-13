@@ -25,6 +25,7 @@ const DisplayJobs = ({ jobs, handleEditJob, handleDeleteJob, handleCreateAssessm
                     <th>Number of assessments</th>
                     <th>Update</th>
                     <th>Delete</th>
+                    <th>Create Assessment</th>
                 </tr>
             </thead>
 

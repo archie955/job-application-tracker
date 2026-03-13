@@ -1,9 +1,16 @@
 const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) => {
-    const assessments = job.assessments ? job.assessments : [{id: null, type: null, deadline: null, completed: null, description: null}]
+    const assessments = job.assessments || []
+    if (assessments.length === 0) {
+        return (
+            <tr className="assessment-row">
+                <td colSpan="9">No Assessments</td>
+            </tr>
+        )
+    }
+
     return (
         <tr className="assessment-row">
             <td colSpan="9">
-
                 <table className="assessment-table">
                     <thead>
                         <tr>
@@ -11,22 +18,22 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                             <th>Deadline</th>
                             <th>Completed</th>
                             <th>Description</th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {assessments.map(assessment => (
-                            <tr
-                                key={assessment.id}
-                                className="job-row"
-                                onClick={() => console.log("pressed row!")}
-                            >
+                            <tr key={assessment.id} className="job-row">
                                 <td>{assessment.type}</td>
                                 <td>{assessment.deadline}</td>
                                 <td>{assessment.completed ? "✅" : "❌"}</td>
                                 <td>{assessment.description}</td>
+
                                 <td>
-                                    <button type="button"
+                                    <button
+                                        type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleEditAssessment(job, assessment)
@@ -35,8 +42,10 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                         Update
                                     </button>
                                 </td>
+
                                 <td>
-                                    <button type="button"
+                                    <button
+                                        type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteAssessment(job, assessment)

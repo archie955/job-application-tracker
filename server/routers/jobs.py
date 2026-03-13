@@ -22,7 +22,7 @@ def create_job(job: schemas.Job,
     new_job = models.Job(user_id=user.id, **job.model_dump())
 
     if db.query(models.Job).filter(models.Job.title == new_job.title,
-                                   models.Job.title == new_job.title,
+                                   models.Job.employer == new_job.employer,
                                    models.Job.description == new_job.description).first():
         logger.warning("Failed job creation", extra={"user_id": user.id})
         raise HTTPException(
@@ -123,7 +123,7 @@ def delete_job(id: int,
 
 
 
-@router.put("/update/{id}", status_code=status.HTTP_200_OK, response_model=schemas.JobComplete)
+@router.put("/update/{id}", status_code=status.HTTP_200_OK, response_model=schemas.JobDetail)
 def update_job(id: int,
                new_job_info: schemas.Job,
                db: Session = Depends(get_db),
@@ -150,7 +150,7 @@ def update_job(id: int,
 
     logger.info("Successful update job request", extra={"user_id": user.id, "job_id": id})
 
-    return schemas.JobComplete.model_validate(job)
+    return schemas.JobDetail.model_validate(job)
 
 
 
