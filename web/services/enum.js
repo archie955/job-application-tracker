@@ -1,4 +1,4 @@
-const ApplicationStatus = {
+export const ApplicationStatus = {
     Not_Applied: "NOT_APPLIED",
     Applied: "APPLIED",
     Interview: "INTERVIEW",
@@ -6,4 +6,8 @@ const ApplicationStatus = {
     Successful: "SUCCESSFUL"
 }
 
-export default ApplicationStatus
+export const AssessmentType = {
+    Online_Assessment: "ONLINE_ASSESSMENT",
+    Interview: "INTERVIEW",
+    ASSESSMENT_CENTRE: "ASSESSMENT_CENTRE"
+}
