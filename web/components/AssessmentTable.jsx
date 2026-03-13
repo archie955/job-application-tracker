@@ -1,4 +1,4 @@
-const AssessmentTable = ({ job }) => {
+const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) => {
     const assessments = job.assessments ? job.assessments : [{id: null, type: null, deadline: null, completed: null, decription: null}]
     return (
         <tr className="assessment-row">
@@ -25,6 +25,26 @@ const AssessmentTable = ({ job }) => {
                                 <td>{assessment.deadline}</td>
                                 <td>{assessment.completed ? "✅" : "❌"}</td>
                                 <td>{assessment.description}</td>
+                                <td>
+                                    <button type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleEditAssessment(assessment)
+                                        }}
+                                    >
+                                        Update
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteAssessment(assessment)
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         })}
                     </tbody>
