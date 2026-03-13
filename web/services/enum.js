@@ -11,3 +11,8 @@ export const AssessmentType = {
     Interview: "INTERVIEW",
     ASSESSMENT_CENTRE: "ASSESSMENT_CENTRE"
 }
+
+export const FormType = {
+    Job: "Job",
+    Assessment: "Assessment"
+}

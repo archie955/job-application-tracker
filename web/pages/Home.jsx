@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../components/AuthProvider"
 import DisplayJobs from "../components/JobDisplay"
-import ApplicationStatus from "../services/enum"
+import { ApplicationStatus, AssessmentType, FormType } from "../services/enum"
 import JobForm from "../components/AddJobForm"
 
 
@@ -24,6 +24,12 @@ const Home = () => {
 
     const [editingJobId, setEditingJobId] = useState(null)
 
+    const [jobOrAssessment, setJobOrAssessment] = useState(FormType.Job)
+
+    const [editingAssessmentId, setEditingAssessmentId] = useState(null)
+    const [type, setType] = useState(AssessmentType.Online_Assessment)
+    const [completed, setCompleted] = useState(false)
+
 
     const handleLogout = async (e) => {
         e.preventDefault()
@@ -42,6 +48,8 @@ const Home = () => {
         setDescription("")
         setLocation("")
         setEditingJobId(null)
+        setEditingAssessmentId(null)
+        setJobOrAssessment(FormType.Job)
     }
 
     const handleCreateJob = async (newJob) => {
@@ -58,6 +66,7 @@ const Home = () => {
     }
 
     const handleEditJob = (job) => {
+        resetForm()
         setTitle(job.title)
         setEmployer(job.employer)
         setStatus(job.status)
@@ -69,6 +78,22 @@ const Home = () => {
     const handleDeleteJob = async (jobToDelete) => {
         await deleteJob(jobToDelete.id)
         setJobs((prev) => prev.filter(job => job.id !== jobToDelete.id))
+        resetForm()
+    }
+
+    const switchToNewAssessment = (job) => {
+        const jobId = job.id
+        resetForm()
+        setJobOrAssessment(FormType.Assessment)
+        setEditingAssessmentId(null)
+        setType(AssessmentType.Online_Assessment)
+        setCompleted(false)
+        
+    }
+
+    const handleCreateAssessment = async (job, newAssessment) => {
+        const updatedJob = await handleCreateAssessment(job, newAssessment)
+        setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
         resetForm()
     }
 
