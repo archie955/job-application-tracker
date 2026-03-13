@@ -111,7 +111,7 @@ const Home = () => {
         setCompleted(assessment.completed)
     }
 
-    const handleEditAssessment = (assessment) => {
+    const handleEditAssessment = async (assessment) => {
         if (editingAssessmentId === null || jobAssessmentId === null) return
         const updatedJob = await updateAssessment(jobAssessmentId, editingAssessmentId, assessment)
         setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
@@ -137,7 +137,7 @@ const Home = () => {
             }
         }
         fetchData()
-    }, [getJobs])
+    }, [])
 
     if (loading) {
         return <h1>Loading...</h1>

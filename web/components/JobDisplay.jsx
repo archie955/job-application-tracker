@@ -77,14 +77,17 @@ const DisplayJobs = ({ jobs, handleEditJob, handleDeleteJob, handleCreateAssessm
                         </tr>
 
                         {expandedJobId === job.id && (
-                            <div>
-                                {job.description}
+                            <>
+                                <tr>
+                                    <td colSpan="9">{job.description}</td>
+                                </tr>
+
                                 <AssessmentTable
-                                    job={job} 
+                                    job={job}
                                     handleEditAssessment={handleEditAssessment}
                                     handleDeleteAssessment={handleDeleteAssessment}
                                 />
-                            </div>
+                            </>
                         )}
                     </React.Fragment>
                 ))}

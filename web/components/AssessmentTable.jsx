@@ -1,8 +1,8 @@
 const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) => {
-    const assessments = job.assessments ? job.assessments : [{id: null, type: null, deadline: null, completed: null, decription: null}]
+    const assessments = job.assessments ? job.assessments : [{id: null, type: null, deadline: null, completed: null, description: null}]
     return (
         <tr className="assessment-row">
-            <td colspan="8">
+            <td colSpan="9">
 
                 <table className="assessment-table">
                     <thead>
@@ -29,7 +29,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                     <button type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleEditAssessment(assessment)
+                                            handleEditAssessment(job, assessment)
                                         }}
                                     >
                                         Update
@@ -39,7 +39,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                     <button type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteAssessment(assessment)
+                                            handleDeleteAssessment(job, assessment)
                                         }}
                                     >
                                         Delete
