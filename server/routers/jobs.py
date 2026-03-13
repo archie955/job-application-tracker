@@ -259,7 +259,7 @@ def update_assessment(id: int,
 
     return schemas.AssessmentComplete.model_validate(assessment)
 
-@router.delete("/delete/{job_id}/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/{job_id}/{id}", status_code=status.HTTP_200_OK, response_model=schemas.JobDetail)
 def delete_assessment(id: int,
                       job_id: int,
                       db: Session = Depends(get_db),
@@ -267,7 +267,9 @@ def delete_assessment(id: int,
                       ):
     logger.info("Delete assessment request", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
 
-    if not db.query(models.Job).filter(models.Job.id == job_id).first():
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+
+    if not job:
         logger.info("Failed delete assessment", extra={"user_id": user.id, "assessment_id": id})
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -285,7 +287,19 @@ def delete_assessment(id: int,
 
     db.delete(assessment)
     db.commit()
+    db.refresh(job)
+
+    res = schemas.JobDetail(id=job.id,
+                             user_id=job.user_id,
+                             employer=job.employer,
+                             title=job.title,
+                             description=job.description,
+                             location=job.location,
+                             deadline=job.deadline,
+                             created_at=job.created_at,
+                             updated_at=job.updated_at,
+                             assessments=job.assessments)
 
     logger.info("Successful delete assessment", extra={"user_id": user.id, "job_id": job_id, "assessment_id": id})
 
-    return
+    return res

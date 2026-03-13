@@ -4,13 +4,14 @@ import { useAuth } from "../components/AuthProvider"
 import DisplayJobs from "../components/JobDisplay"
 import { ApplicationStatus, AssessmentType, FormType } from "../services/enum"
 import JobForm from "../components/AddJobForm"
+import AssessmentForm from "../components/AddAssessmentForm"
 
 
 
 
 const Home = () => {
     const navigate = useNavigate()
-    const { logout, getJobs, createJob, updateJob, deleteJob } = useAuth()
+    const { logout, getJobs, createJob, updateJob, deleteJob, createAssessment, updateAssessment, deleteAssessment } = useAuth()
 
     const [jobs, setJobs] = useState([])
     const [loading, setLoading] = useState(true)
@@ -26,7 +27,9 @@ const Home = () => {
 
     const [jobOrAssessment, setJobOrAssessment] = useState(FormType.Job)
 
+    const [jobAssessmentId, setJobAssessmentId] = useState(null)
     const [editingAssessmentId, setEditingAssessmentId] = useState(null)
+
     const [type, setType] = useState(AssessmentType.Online_Assessment)
     const [completed, setCompleted] = useState(false)
 
@@ -49,6 +52,7 @@ const Home = () => {
         setLocation("")
         setEditingJobId(null)
         setEditingAssessmentId(null)
+        setJobAssessmentId(null)
         setJobOrAssessment(FormType.Job)
     }
 
@@ -67,6 +71,7 @@ const Home = () => {
 
     const handleEditJob = (job) => {
         resetForm()
+        setJobOrAssessment(FormType.Job)
         setTitle(job.title)
         setEmployer(job.employer)
         setStatus(job.status)
@@ -82,18 +87,40 @@ const Home = () => {
     }
 
     const switchToNewAssessment = (job) => {
-        const jobId = job.id
         resetForm()
         setJobOrAssessment(FormType.Assessment)
         setEditingAssessmentId(null)
+        setJobAssessmentId(job.id)
         setType(AssessmentType.Online_Assessment)
         setCompleted(false)
-        
     }
 
-    const handleCreateAssessment = async (job, newAssessment) => {
-        const updatedJob = await handleCreateAssessment(job, newAssessment)
+    const handleCreateAssessment = async (newAssessment) => {
+        const updatedJob = await createAssessment(jobAssessmentId, newAssessment)
         setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
+        resetForm()
+    }
+
+    const switchToEditAssessment = (job, assessment) => {
+        resetForm()
+        setJobOrAssessment(FormType.Assessment)
+        setEditingAssessmentId(assessment.id)
+        setJobAssessmentId(job.id)
+        setType(assessment.type)
+        setDescription(assessment.description)
+        setCompleted(assessment.completed)
+    }
+
+    const handleEditAssessment = (assessment) => {
+        if (editingAssessmentId === null || jobAssessmentId === null) return
+        const updatedJob = await updateAssessment(jobAssessmentId, editingAssessmentId, assessment)
+        setJobs(jobs.map(job => job.id === updatedJob.id ? updatedJob : job))
+        resetForm()
+    }
+
+    const handleDeleteAssessment = async (job, assessment) => {
+        const updatedJob = await deleteAssessment(job.id, assessment.id)
+        setJobs(jobs.map(j => j.id === updatedJob.id ? updatedJob : j))
         resetForm()
     }
 
@@ -139,26 +166,40 @@ const Home = () => {
                         jobs={jobs}
                         handleEditJob={handleEditJob}
                         handleDeleteJob={handleDeleteJob}
+                        handleCreateAssessment={switchToNewAssessment}
+                        handleEditAssessment={switchToEditAssessment}
+                        handleDeleteAssessment={handleDeleteAssessment}
                     />
                 </div>
 
                 <div className="form-section">
-                    <JobForm
-                        title={title} setTitle={setTitle}
-                        employer={employer} setEmployer={setEmployer}
-                        location={location} setLocation={setLocation}
-                        description={description} setDescription={setDescription}
-                        status={status} setStatus={setStatus} 
-                        submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
-                        formpurpose={editingJobId ? "Edit job" : "Add a new job"}
-                    />
+                    {(jobOrAssessment === FormType.Job) && 
+                        <JobForm
+                            title={title} setTitle={setTitle}
+                            employer={employer} setEmployer={setEmployer}
+                            location={location} setLocation={setLocation}
+                            description={description} setDescription={setDescription}
+                            status={status} setStatus={setStatus} 
+                            submitFunction={editingJobId ? handleUpdateJob : handleCreateJob}
+                            formpurpose={editingJobId ? "Edit job" : "Add a new job"}
+                        />
+                    }
+                    {(jobOrAssessment === FormType.Assessment) &&
+                        <AssessmentForm
+                            type={type} setType={setType}
+                            completed={completed} setCompleted={setCompleted}
+                            description={description} setDescription={setDescription}
+                            submitFunction={editingAssessmentId ? handleEditAssessment : handleCreateAssessment}
+                            formpurpose={editingAssessmentId ? "Edit Assessment" : "Add a new assessment"}
+                        />
+                    }
 
-                    {editingJobId && 
+                    {(editingJobId || (jobOrAssessment === FormType.Assessment)) && 
                         <button
                             className="secondary-btn"
                             onClick={resetForm}
                         >
-                            Cancel Edit
+                            Reset Form
                         </button>
                     }
                 </div>

@@ -266,7 +266,7 @@ def test_delete_assessment(client, authenticated_user):
     response = client.delete(f"/jobs/delete/{job['id']}/{assessment['id']}",
                              headers=auth_headers(authenticated_user)
                              )
-    assert response.status_code == 204
+    assert response.status_code == 200
 
     response = client.get(f"/jobs/get/{job['id']}",
                           headers=auth_headers(authenticated_user)

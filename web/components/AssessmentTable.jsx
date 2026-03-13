@@ -15,7 +15,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                     </thead>
 
                     <tbody>
-                        {assessments.map(assessment => {
+                        {assessments.map(assessment => (
                             <tr
                                 key={assessment.id}
                                 className="job-row"
@@ -46,7 +46,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                     </button>
                                 </td>
                             </tr>
-                        })}
+                        ))}
                     </tbody>
                 </table>
             </td>

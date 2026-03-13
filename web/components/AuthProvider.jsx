@@ -79,12 +79,27 @@ export const AuthProvider = ({ children }) => {
         return response.data
     }
 
+    const createAssessment = async (job_id, newAssessment) => {
+        const response = await api.post(`/jobs/create/${job_id}`, newAssessment)
+        return response.data
+    }
+
+    const updateAssessment = async (job_id, assessment_id, updatedAssessment) => {
+        const response = await api.put(`/jobs/update/${job_id}/${assessment_id}`, updatedAssessment)
+        return response.data
+    }
+
+    const deleteAssessment = async (job_id, assessment_id) => {
+        const response = await api.delete(`/jobs/delete/${job_id}/${assessment_id}`)
+        return response.data
+    }
+
     if (loading) {
         return null
     }
 
     return (
-        <AuthContext.Provider value={{ token, login, logout, register, getJobs, createJob, updateJob, deleteJob }}>
+        <AuthContext.Provider value={{ token, login, logout, register, getJobs, createJob, updateJob, deleteJob, createAssessment, updateAssessment, deleteAssessment }}>
             {children}
         </AuthContext.Provider>
     )

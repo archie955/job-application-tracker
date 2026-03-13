@@ -2,7 +2,7 @@ import { useState } from 'react'
 import React from 'react'
 import AssessmentTable from './AssessmentTable'
 
-const DisplayJobs = ({ jobs, handleEditJob, handleDeleteJob }) => {
+const DisplayJobs = ({ jobs, handleEditJob, handleDeleteJob, handleCreateAssessment, handleDeleteAssessment, handleEditAssessment }) => {
     const [expandedJobId, setExpandedJobId] = useState(null)
 
     const toggleExpand = (id) => {
@@ -64,12 +64,26 @@ const DisplayJobs = ({ jobs, handleEditJob, handleDeleteJob }) => {
                                     Delete
                                 </button>
                             </td>
+                            <td>
+                                <button type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleCreateAssessment(job)
+                                    }}
+                                >
+                                    Create new assessment
+                                </button>
+                            </td>
                         </tr>
 
                         {expandedJobId === job.id && (
                             <div>
                                 {job.description}
-                                <AssessmentTable job={job} />
+                                <AssessmentTable
+                                    job={job} 
+                                    handleEditAssessment={handleEditAssessment}
+                                    handleDeleteAssessment={handleDeleteAssessment}
+                                />
                             </div>
                         )}
                     </React.Fragment>
