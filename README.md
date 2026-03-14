@@ -3,9 +3,9 @@
 This is a full-stack job application tracker with the ability to track jobs and their corresponding assessments and stages.
 
 ## Contents
-1) [Technology Stack](##stack)
-2) [Usage](##usage)
-3) [Roadmap](##roadmap)
+1) [Technology Stack](#stack)
+2) [Usage](#usage)
+3) [Roadmap](#roadmap)
 
 
 ## Stack
