@@ -38,7 +38,7 @@ const Home = () => {
         e.preventDefault()
         try {
             await logout()
-            navigate("/login")
+            navigate("")
         } catch(err) {
             setError("Unable to logout")
         }
@@ -131,6 +131,7 @@ const Home = () => {
     }
 
     useEffect(() => {
+
         const fetchData = async () => {
             try {
                 const jobsResponse = await getJobs()

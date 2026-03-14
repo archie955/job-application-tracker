@@ -16,14 +16,14 @@ const Register = () => {
         e.preventDefault()
         try {
             await register(email, password)
-            navigate("/login")
+            navigate("")
         } catch (err) {
             setError("Invalid credentials")
         }
     }
 
     const switchToLogin = () => {
-        navigate("/login")
+        navigate("")
     }
 
     const changeShowPassword = () => {
