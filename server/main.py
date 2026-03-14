@@ -14,11 +14,12 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-origins = [
-    settings.backend_url,
-    settings.frontend_url,
-    settings.nginx_baseurl
-]
+# origins = [
+#     settings.backend_url,
+#     settings.frontend_url,
+#     settings.nginx_baseurl
+# ]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

@@ -3,4 +3,4 @@ __pycache__
 .env
 .git
 node_modules
-.env.prod
+.env.dev

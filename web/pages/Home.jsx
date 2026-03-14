@@ -104,10 +104,10 @@ const Home = () => {
         resetForm()
     }
 
-    const switchToEditAssessment = (job, assessment) => {
+    const switchToEditAssessment = (assessment) => {
         setJobOrAssessment(FormType.Assessment)
         setEditingAssessmentId(assessment.id)
-        setJobAssessmentId(job.id)
+        setJobAssessmentId(assessment.job_id)
         setType(assessment.type)
         setDescription(assessment.description)
         setCompleted(assessment.completed)
@@ -122,8 +122,8 @@ const Home = () => {
         resetForm()
     }
 
-    const handleDeleteAssessment = async (job, assessment) => {
-        const updatedJob = await deleteAssessment(job.id, assessment.id)
+    const handleDeleteAssessment = async (assessment) => {
+        const updatedJob = await deleteAssessment(assessment.job_id, assessment.id)
         setJobs(prev =>
             prev.map(j => j.id === updatedJob.id ? updatedJob : j)
         )

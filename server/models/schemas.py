@@ -82,6 +82,6 @@ class AssessmentComplete(Assessment):
 
 class JobDetail(JobComplete):
     model_config = config
-    assessments: Optional[List[Assessment]] = None
+    assessments: Optional[List[AssessmentComplete]] = None
 
 

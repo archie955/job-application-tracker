@@ -36,7 +36,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleEditAssessment(job, assessment)
+                                            handleEditAssessment(assessment)
                                         }}
                                     >
                                         Update
@@ -48,7 +48,7 @@ const AssessmentTable = ({ job, handleEditAssessment, handleDeleteAssessment }) 
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteAssessment(job, assessment)
+                                            handleDeleteAssessment(assessment)
                                         }}
                                     >
                                         Delete
