@@ -41,7 +41,7 @@ def create_sample_assessment(client, authenticated_user, job_id, type=Assessment
                            )
     
     assert response.status_code == 200
-    return response.json()
+    return response.json()["assessments"][0]
 
 def test_create_job(client, authenticated_user):
     job = create_sample_job(client, authenticated_user)
@@ -222,8 +222,8 @@ def test_update_assessment(client, authenticated_user):
     
     assert response.status_code == 200
     data = response.json()
-    assert data["type"] == AssessmentType.INTERVIEW
-    assert data["completed"] == False
+    assert data["assessments"][0]["type"] == AssessmentType.INTERVIEW
+    assert data["assessments"][0]["completed"] == False
 
 def test_update_assessment_nonexistent_job(client, authenticated_user):
     updated_assessment = {
